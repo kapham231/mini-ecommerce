@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Limited Role
+// Static Role
 enum Role {
   USER
   ADMIN
@@ -62,7 +62,7 @@ model Product {
   orderItems  OrderItem[]
 }
 
-// Order Status
+// Static Order Status
 enum OrderStatus {
   PENDING
   CONFIRMED
