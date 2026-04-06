@@ -4,7 +4,6 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
-    npm
     /**
      * =========================
      * 1. CREATE USERS
