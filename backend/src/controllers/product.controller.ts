@@ -37,3 +37,27 @@ export const createProduct = async (req: Request, res: Response) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+/**
+ * Controller sửa thống tin sản phẩm dựa trên ID của sản phẩm
+ */
+export const editProduct = async (req: Request, res: Response) => {
+    try {
+        const product = await productService.editProduct(+req.params.id, req.body);
+        res.json(product);
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+/**
+ * Controller xóa sản phẩm dựa trên ID của sản phẩm
+ */
+export const deleteProduct = async (req: Request, res: Response) => {
+    try {
+        const product = await productService.deleteProduct(+req.params.id);
+        res.json(product);
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
+};

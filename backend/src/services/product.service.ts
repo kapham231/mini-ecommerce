@@ -171,3 +171,63 @@ export const getProduct = async (id: number) => {
         price: Number(product.price),
     };
 }
+
+/**
+ * EDIT PRODUCT INFORMATION
+ * Sửa thông tin chi tiết của 1 sản phẩm
+ */
+export const editProduct = async (id: number, data: any) => {
+    // Kiểm tra id
+    if (!id || isNaN(id)) {
+        throw new Error("Invalid product id");
+    }
+
+    // Query product
+    const product = await prisma.product.findUnique({
+        where: { id },
+    });
+
+    // Check tồn tại
+    if (!product || !product.isActive) {
+        throw new Error("Product not found");
+    }
+
+    // Update product
+    const updatedProduct = await prisma.product.update({
+        where: { id },
+        data,
+    });
+
+    return updatedProduct;
+}
+
+/**
+ * DELETE PRODUCT (Soft delete)
+ * Xóa sản phẩm
+ */
+export const deleteProduct = async (id: number) => {
+    // Kiểm tra id
+    if (!id || isNaN(id)) {
+        throw new Error("Invalid product id");
+    }
+
+    // Query product
+    const product = await prisma.product.findUnique({
+        where: { id },
+    });
+
+    // Check tồn tại
+    if (!product || !product.isActive) {
+        throw new Error("Product not found");
+    }
+
+    // Update product
+    const deletedProduct = await prisma.product.update({
+        where: { id },
+        data: {
+            isActive: false,
+        },
+    });
+
+    return deletedProduct;
+}
