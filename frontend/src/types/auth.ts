@@ -9,5 +9,4 @@ export type AuthResponse = {
   user: User
 }
 
-/** Backend may return only a message after register (no token). */
 export type RegisterSuccessResponse = AuthResponse | { message?: string }
