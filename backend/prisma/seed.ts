@@ -41,11 +41,11 @@ async function main() {
    */
 
     const categoriesData = [
-        "Laptop",
-        "Phone",
-        "Tablet",
-        "Accessory",
-        "Camera",
+        "Action Figures",
+        "Building Sets",
+        "Dolls",
+        "Puzzles",
+        "Educational Toys",
     ];
 
     const categories: Category[] = [];
@@ -54,14 +54,14 @@ async function main() {
         const category = await prisma.category.create({
             data: {
                 name,
-                slug: name.toLowerCase(),
+                slug: name.toLowerCase().replace(/\s+/g, "-"),
             },
         });
 
         categories.push(category);
     }
 
-    console.log("Catgories have been seeded");
+    console.log("Categories have been seeded");
 
     /**
    * =========================
@@ -69,19 +69,36 @@ async function main() {
    * =========================
    */
 
-    const productsData = Array.from({ length: 15 }).map((_, i) => {
-        // Random
+    const toyNames = [
+        "Rainbow Building Blocks",
+        "Space Adventure Robot",
+        "Princess Dollhouse",
+        "Animal Puzzle Set",
+        "Alphabet Learning Board",
+        "Race Car Track",
+        "Wooden Train Set",
+        "Magic Clay Kit",
+        "Mini Soccer Ball",
+        "Dinosaur Explorer Kit",
+        "Stickers and Coloring Set",
+        "Cuddly Plush Bear",
+        "Bubble Wand Set",
+        "Kids Karaoke Microphone",
+        "Rocket Launcher Toy",
+    ];
+
+    const productsData = toyNames.map((name, i) => {
         const randomCategory = categories[Math.floor(Math.random() * categories.length)];
 
         return {
-            name: `Product ${i + 1}`,
-            slug: `Product-${i + 1}`,
-            description: `Product ${i + 1} description`,
-            price: Math.floor(Math.random() * 1000) + 100,
-            stock: Math.floor(Math.random() * 50),
+            name,
+            slug: name.toLowerCase().replace(/\s+/g, "-"),
+            description: `${name} for children aged 3 and up`,
+            price: Math.floor(Math.random() * 300) + 100,
+            stock: Math.floor(Math.random() * 50) + 10,
             categoryId: randomCategory.id,
             imageUrl: "https://via.placeholder.com/150",
-        }
+        };
     });
 
     await prisma.product.createMany({

@@ -29,11 +29,12 @@ export const createCategory = async (req: Request, res: Response) => {
 
 /**
  * Controller sửa category
- * Chuyển id từ params sang number rồi gọi service edit
+ * Truyền id trực tiếp từ params vì mô hình ID là UUID string
  */
 export const editCategory = async (req: Request, res: Response) => {
     try {
-        const category = await categoryService.editCategory(+req.params.id, req.body);
+        const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const category = await categoryService.editCategory(id, req.body);
         res.json(category);
     } catch (error: any) {
         res.status(400).json({ message: error.message });
@@ -42,11 +43,12 @@ export const editCategory = async (req: Request, res: Response) => {
 
 /**
  * Controller xóa category
- * Chuyển id từ params sang number rồi gọi service delete
+ * Truyền id trực tiếp từ params vì mô hình ID là UUID string
  */
 export const deleteCategory = async (req: Request, res: Response) => {
     try {
-        const category = await categoryService.deleteCategory(+req.params.id);
+        const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const category = await categoryService.deleteCategory(id);
         res.json(category);
     } catch (error: any) {
         res.status(400).json({ message: error.message });

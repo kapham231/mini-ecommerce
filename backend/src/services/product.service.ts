@@ -64,7 +64,7 @@ export const getProducts = async (query: {
 
     // Category filter
     if (categoryId) {
-        where.categoryId = Number(categoryId);
+        where.categoryId = categoryId;
     }
 
     // Pagination
@@ -111,7 +111,7 @@ export const createProduct = async (data: {
     price: number;
     stock?: number;
     imageUrl?: string;
-    categoryId: number;
+    categoryId: string;
 }) => {
     const { name, description, price, stock = 0, imageUrl, categoryId } = data;
 
@@ -146,9 +146,10 @@ export const createProduct = async (data: {
  * GET PRODUCT INFORMATION
  * Lấy thông tin chi tiết của 1 sản phẩm
  */
-export const getProduct = async (id: number) => {
-    // Kiểm tra id
-    if (!id || isNaN(id)) {
+export const getProduct = async (id: string) => {
+    // Kiểm tra id là UUID string hợp lệ
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!id || typeof id !== "string" || !uuidRegex.test(id)) {
         throw new Error("Invalid product id");
     }
 
@@ -176,9 +177,10 @@ export const getProduct = async (id: number) => {
  * EDIT PRODUCT INFORMATION
  * Sửa thông tin chi tiết của 1 sản phẩm
  */
-export const editProduct = async (id: number, data: any) => {
-    // Kiểm tra id
-    if (!id || isNaN(id)) {
+export const editProduct = async (id: string, data: any) => {
+    // Kiểm tra id là UUID string hợp lệ
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!id || typeof id !== "string" || !uuidRegex.test(id)) {
         throw new Error("Invalid product id");
     }
 
@@ -205,9 +207,10 @@ export const editProduct = async (id: number, data: any) => {
  * DELETE PRODUCT (Soft delete)
  * Xóa sản phẩm
  */
-export const deleteProduct = async (id: number) => {
-    // Kiểm tra id
-    if (!id || isNaN(id)) {
+export const deleteProduct = async (id: string) => {
+    // Kiểm tra id là UUID string hợp lệ
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!id || typeof id !== "string" || !uuidRegex.test(id)) {
         throw new Error("Invalid product id");
     }
 

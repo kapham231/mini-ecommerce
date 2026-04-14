@@ -103,9 +103,10 @@ export const createCategory = async (data: { name: string }) => {
  * EDIT CATEGORY SERVICE
  * Sửa thông tin danh mục sản phẩm
  */
-export const editCategory = async (id: number, data: { name?: string }) => {
-    // Validate id
-    if (!id || isNaN(id)) {
+export const editCategory = async (id: string, data: { name?: string }) => {
+    // Validate id là UUID string hợp lệ
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!id || typeof id !== "string" || !uuidRegex.test(id)) {
         throw new Error("Invalid category id");
     }
 
@@ -157,9 +158,10 @@ export const editCategory = async (id: number, data: { name?: string }) => {
  * DELETE CATEGORY SERVICE
  * Xóa danh mục sản phẩm
  */
-export const deleteCategory = async (id: number) => {
-    // Validate id
-    if (!id || isNaN(id)) {
+export const deleteCategory = async (id: string) => {
+    // Validate id là UUID string hợp lệ
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!id || typeof id !== "string" || !uuidRegex.test(id)) {
         throw new Error("Invalid category id");
     }
 

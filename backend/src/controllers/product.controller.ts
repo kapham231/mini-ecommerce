@@ -19,7 +19,8 @@ export const getProducts = async (req: Request, res: Response) => {
  */
 export const getProductbyId = async (req: Request, res: Response) => {
     try {
-        const product = await productService.getProduct(+req.params.id);
+        const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const product = await productService.getProduct(id);
         res.json(product);
     } catch (error: any) {
         res.status(400).json({ message: error.message });
@@ -31,7 +32,8 @@ export const getProductbyId = async (req: Request, res: Response) => {
  */
 export const createProduct = async (req: Request, res: Response) => {
     try {
-        const product = await productService.createProduct(req.body);
+        const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const product = await productService.deleteProduct(id);
         res.json(product);
     } catch (error: any) {
         res.status(400).json({ message: error.message });
@@ -43,7 +45,8 @@ export const createProduct = async (req: Request, res: Response) => {
  */
 export const editProduct = async (req: Request, res: Response) => {
     try {
-        const product = await productService.editProduct(+req.params.id, req.body);
+        const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const product = await productService.editProduct(id, req.body);
         res.json(product);
     } catch (error: any) {
         res.status(400).json({ message: error.message });
@@ -55,7 +58,8 @@ export const editProduct = async (req: Request, res: Response) => {
  */
 export const deleteProduct = async (req: Request, res: Response) => {
     try {
-        const product = await productService.deleteProduct(+req.params.id);
+        const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const product = await productService.deleteProduct(id);
         res.json(product);
     } catch (error: any) {
         res.status(400).json({ message: error.message });
