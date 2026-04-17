@@ -1,28 +1,20 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
+/**
+ * Server Entry Point
+ * 
+ * Starts the Express server listening on the configured port.
+ * Separated from app configuration for easier testing.
+ */
 
-import authRoutes from "./routes/auth.routes";
-import productRoutes from "./routes/product.routes";
-import categoryRoutes from "./routes/category.routes";
+import dotenv from "dotenv";
+import { createApp } from "./app";
 
 dotenv.config();
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-app.use(cookieParser());
-
-app.get("/", (_, res) => {
-    res.send("API is running")
-});
-
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/categories", categoryRoutes);
-
 const PORT = process.env.PORT || 5000;
+const app = createApp();
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(`Architecture: Modular Monolith`);
+});
