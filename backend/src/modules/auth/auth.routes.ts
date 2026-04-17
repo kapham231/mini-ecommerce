@@ -11,26 +11,26 @@ import { validate } from "../../shared/middleware/validation.middleware";
 import { registerSchema, loginSchema } from "./auth.types";
 
 export function createAuthRouter(): Router {
-  const router = Router();
+    const router = Router();
 
-  // Instantiate service and controller (DI pattern)
-  const authService = new AuthService();
-  const authController = new AuthController(authService);
+    // Instantiate service and controller (DI pattern)
+    const authService = new AuthService();
+    const authController = new AuthController(authService);
 
-  // Routes
-  router.post(
-    "/register",
-    validate({ body: registerSchema }),
-    authController.register
-  );
+    // Routes
+    router.post(
+        "/register",
+        validate({ body: registerSchema }),
+        authController.register
+    );
 
-  router.post(
-    "/login",
-    validate({ body: loginSchema }),
-    authController.login
-  );
+    router.post(
+        "/login",
+        validate({ body: loginSchema }),
+        authController.login
+    );
 
-  return router;
+    return router;
 }
 
 export default createAuthRouter();

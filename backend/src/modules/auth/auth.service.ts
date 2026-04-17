@@ -8,114 +8,114 @@
 
 import bcrypt from "bcrypt";
 import { prisma } from "../../shared/prisma/client";
-import { 
-  ConflictError, 
-  ValidationError, 
-  UnauthorizedError 
+import {
+    ConflictError,
+    ValidationError,
+    UnauthorizedError
 } from "../../shared/types/error";
 import { RegisterRequest, LoginRequest, AuthResponse } from "./auth.types";
 import { generateToken } from "../../shared/utils/jwt";
 
 export class AuthService {
-  /**
-   * Register a new user
-   */
-  async register(data: RegisterRequest): Promise<AuthResponse> {
-    const { name, email, password } = data;
+    /**
+     * Register a new user
+     */
+    async register(data: RegisterRequest): Promise<AuthResponse> {
+        const { name, email, password } = data;
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+            where: { email },
+        });
 
-    if (existingUser) {
-      throw new ConflictError("Email already exists");
+        if (existingUser) {
+            throw new ConflictError("Email already exists");
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create user
+        const user = await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+            },
+        });
+
+        // Generate token
+        const token = generateToken({
+            id: user.id,
+            role: user.role,
+        });
+
+        return {
+            user,
+            token,
+        };
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    /**
+     * Login a user
+     */
+    async login(data: LoginRequest): Promise<AuthResponse> {
+        const { email, password } = data;
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-      },
-    });
+        // Find user by email
+        const user = await prisma.user.findUnique({
+            where: { email },
+        });
 
-    // Generate token
-    const token = generateToken({
-      id: user.id,
-      role: user.role,
-    });
+        if (!user) {
+            throw new UnauthorizedError("Invalid credentials");
+        }
 
-    return {
-      user,
-      token,
-    };
-  }
+        // Compare passwords
+        const isPasswordValid = await bcrypt.compare(password, user.password);
 
-  /**
-   * Login a user
-   */
-  async login(data: LoginRequest): Promise<AuthResponse> {
-    const { email, password } = data;
+        if (!isPasswordValid) {
+            throw new UnauthorizedError("Invalid credentials");
+        }
 
-    // Find user by email
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+        // Generate token
+        const token = generateToken({
+            id: user.id,
+            role: user.role,
+        });
 
-    if (!user) {
-      throw new UnauthorizedError("Invalid credentials");
+        const { password: _, ...userWithoutPassword } = user;
+
+        return {
+            user: userWithoutPassword,
+            token,
+        };
     }
 
-    // Compare passwords
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    /**
+     * Get user by ID (useful for other modules)
+     */
+    async getUserById(id: string) {
+        const user = await prisma.user.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+            },
+        });
 
-    if (!isPasswordValid) {
-      throw new UnauthorizedError("Invalid credentials");
+        if (!user) {
+            throw new ValidationError("User not found");
+        }
+
+        return user;
     }
-
-    // Generate token
-    const token = generateToken({
-      id: user.id,
-      role: user.role,
-    });
-
-    const { password: _, ...userWithoutPassword } = user;
-
-    return {
-      user: userWithoutPassword,
-      token,
-    };
-  }
-
-  /**
-   * Get user by ID (useful for other modules)
-   */
-  async getUserById(id: string) {
-    const user = await prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-      },
-    });
-
-    if (!user) {
-      throw new ValidationError("User not found");
-    }
-
-    return user;
-  }
 }

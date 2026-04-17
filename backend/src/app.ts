@@ -29,59 +29,59 @@ dotenv.config();
  * Create and configure Express app
  */
 export function createApp(): Express {
-  const app = express();
+    const app = express();
 
-  // ============================================
-  // Global Middleware
-  // ============================================
-  app.use(cors());
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-  app.use(cookieParser());
+    // ============================================
+    // Global Middleware
+    // ============================================
+    app.use(cors());
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
 
-  // ============================================
-  // Basic Routes
-  // ============================================
-  app.get("/", (_req, res) => {
-    res.json({
-      message: "API is running",
-      version: "1.0.0",
-      architecture: "Modular Monolith",
+    // ============================================
+    // Basic Routes
+    // ============================================
+    app.get("/", (_req, res) => {
+        res.json({
+            message: "API is running",
+            version: "1.0.0",
+            architecture: "Modular Monolith",
+        });
     });
-  });
 
-  // ============================================
-  // Module Routes
-  // ============================================
-  // Each module has its own router factory function
-  // This keeps modules decoupled and easily testable
+    // ============================================
+    // Module Routes
+    // ============================================
+    // Each module has its own router factory function
+    // This keeps modules decoupled and easily testable
 
-  app.use("/api/auth", createAuthRouter());
-  app.use("/api/products", createProductRouter());
-  app.use("/api/categories", createCategoryRouter());
+    app.use("/api/auth", createAuthRouter());
+    app.use("/api/products", createProductRouter());
+    app.use("/api/categories", createCategoryRouter());
 
-  // Health check endpoint
-  app.get("/health", (_req, res) => {
-    res.json({ status: "healthy", timestamp: new Date().toISOString() });
-  });
-
-  // ============================================
-  // 404 Handler
-  // ============================================
-  app.use((_req, res) => {
-    res.status(404).json({
-      success: false,
-      message: "Route not found",
-      statusCode: 404,
+    // Health check endpoint
+    app.get("/health", (_req, res) => {
+        res.json({ status: "healthy", timestamp: new Date().toISOString() });
     });
-  });
 
-  // ============================================
-  // Error Handling Middleware (MUST BE LAST)
-  // ============================================
-  app.use(errorMiddleware);
+    // ============================================
+    // 404 Handler
+    // ============================================
+    app.use((_req, res) => {
+        res.status(404).json({
+            success: false,
+            message: "Route not found",
+            statusCode: 404,
+        });
+    });
 
-  return app;
+    // ============================================
+    // Error Handling Middleware (MUST BE LAST)
+    // ============================================
+    app.use(errorMiddleware);
+
+    return app;
 }
 
 export default createApp;

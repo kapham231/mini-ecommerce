@@ -10,45 +10,45 @@
  */
 
 interface ServiceRegistry {
-  [key: string]: any;
+    [key: string]: any;
 }
 
 class DIContainer {
-  private services: ServiceRegistry = {};
+    private services: ServiceRegistry = {};
 
-  /**
-   * Register a service in the container
-   */
-  register<T>(name: string, service: T): void {
-    if (this.services[name]) {
-      console.warn(`[DI] Service "${name}" is already registered. Overwriting...`);
+    /**
+     * Register a service in the container
+     */
+    register<T>(name: string, service: T): void {
+        if (this.services[name]) {
+            console.warn(`[DI] Service "${name}" is already registered. Overwriting...`);
+        }
+        this.services[name] = service;
     }
-    this.services[name] = service;
-  }
 
-  /**
-   * Retrieve a service from the container
-   */
-  get<T>(name: string): T {
-    if (!this.services[name]) {
-      throw new Error(`[DI] Service "${name}" not found in container`);
+    /**
+     * Retrieve a service from the container
+     */
+    get<T>(name: string): T {
+        if (!this.services[name]) {
+            throw new Error(`[DI] Service "${name}" not found in container`);
+        }
+        return this.services[name] as T;
     }
-    return this.services[name] as T;
-  }
 
-  /**
-   * Check if a service is registered
-   */
-  has(name: string): boolean {
-    return !!this.services[name];
-  }
+    /**
+     * Check if a service is registered
+     */
+    has(name: string): boolean {
+        return !!this.services[name];
+    }
 
-  /**
-   * Get all registered services (useful for debugging)
-   */
-  getAll(): string[] {
-    return Object.keys(this.services);
-  }
+    /**
+     * Get all registered services (useful for debugging)
+     */
+    getAll(): string[] {
+        return Object.keys(this.services);
+    }
 }
 
 // Export singleton instance
