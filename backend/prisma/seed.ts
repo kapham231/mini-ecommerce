@@ -1,5 +1,6 @@
 import { Category, PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { generateUniqueSlug } from "../src/shared/utils";
 
 const prisma = new PrismaClient();
 
@@ -41,20 +42,27 @@ async function main() {
    */
 
     const categoriesData = [
-        "Action Figures",
-        "Building Sets",
-        "Dolls",
-        "Puzzles",
-        "Educational Toys",
+        { name: "Action Figures", description: "Collectible action figures for imaginative play" },
+        { name: "Building Sets", description: "Creative building blocks and construction toys" },
+        { name: "Dolls", description: "Beautiful dolls and accessories for pretend play" },
+        { name: "Puzzles", description: "Brain-teasing puzzles for all ages" },
+        { name: "Educational Toys", description: "Learning toys that make education fun" },
     ];
 
     const categories: Category[] = [];
 
-    for (const name of categoriesData) {
+    for (const { name, description } of categoriesData) {
+        const slug = await generateUniqueSlug(name, async (slug) => {
+            const existing = await prisma.category.findUnique({ where: { slug } });
+            return !!existing;
+        });
+
         const category = await prisma.category.create({
             data: {
                 name,
-                slug: name.toLowerCase().replace(/\s+/g, "-"),
+                slug,
+                description,
+                isActive: true,
             },
         });
 
@@ -87,19 +95,25 @@ async function main() {
         "Rocket Launcher Toy",
     ];
 
-    const productsData = toyNames.map((name, i) => {
-        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+    const productsData = [];
 
-        return {
+    for (const name of toyNames) {
+        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+        const slug = await generateUniqueSlug(name, async (slug) => {
+            const existing = await prisma.product.findUnique({ where: { slug } });
+            return !!existing;
+        });
+
+        productsData.push({
             name,
-            slug: name.toLowerCase().replace(/\s+/g, "-"),
+            slug,
             description: `${name} for children aged 3 and up`,
             price: Math.floor(Math.random() * 300) + 100,
             stock: Math.floor(Math.random() * 50) + 10,
             categoryId: randomCategory.id,
             imageUrl: "https://via.placeholder.com/150",
-        };
-    });
+        });
+    }
 
     await prisma.product.createMany({
         data: productsData,

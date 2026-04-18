@@ -7,8 +7,8 @@
  */
 
 import { Prisma } from "@prisma/client";
-import slugify from "slugify";
 import { prisma } from "../../shared/prisma/client";
+import { generateUniqueSlug } from "../../shared/utils";
 import {
     NotFoundError,
     ValidationError,
@@ -129,16 +129,20 @@ export class ProductService {
             throw new ValidationError("Category not found");
         }
 
-        // Check if product name already exists
+        // Check if product name already exists (case-insensitive)
         const existingProduct = await prisma.product.findFirst({
-            where: { name: data.name },
+            where: { name: { equals: data.name, mode: "insensitive" } },
         });
 
         if (existingProduct) {
             throw new ConflictError("Product with this name already exists");
         }
 
-        const slug = slugify(data.name, { lower: true });
+        // Generate unique slug
+        const slug = await generateUniqueSlug(data.name, async (slug) => {
+            const existing = await prisma.product.findUnique({ where: { slug } });
+            return !!existing;
+        });
 
         const product = await prisma.product.create({
             data: {
@@ -192,8 +196,29 @@ export class ProductService {
         const updateData: Prisma.ProductUpdateInput = {};
 
         if (data.name) {
+            // Check name uniqueness if name is being changed
+            if (data.name !== product.name) {
+                const existingProduct = await prisma.product.findFirst({
+                    where: {
+                        name: { equals: data.name, mode: "insensitive" },
+                        id: { not: id }
+                    },
+                });
+                if (existingProduct) {
+                    throw new ConflictError("Product with this name already exists");
+                }
+            }
+
             updateData.name = data.name;
-            updateData.slug = slugify(data.name, { lower: true });
+
+            // Generate new unique slug if name changed
+            const slug = await generateUniqueSlug(data.name, async (slug) => {
+                const existing = await prisma.product.findFirst({
+                    where: { slug, id: { not: id } }
+                });
+                return !!existing;
+            });
+            updateData.slug = slug;
         }
         if (data.description !== undefined) updateData.description = data.description;
         if (data.price) updateData.price = new Prisma.Decimal(data.price);
