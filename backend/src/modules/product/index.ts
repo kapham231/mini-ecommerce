@@ -6,3 +6,4 @@ export { ProductService } from "./product.service";
 export { ProductController } from "./product.controller";
 export { createProductRouter } from "./product.routes";
 export * from "./product.types";
+export { PaginatedResponse } from "../../common/types/pagination";

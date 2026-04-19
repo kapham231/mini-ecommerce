@@ -32,7 +32,7 @@ export class ProductController {
      * GET /products/:id
      */
     getProductById = asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id } = req.params as { id: string };
         const product = await this.productService.getProductById(id);
 
         res.status(200).json({
@@ -58,7 +58,7 @@ export class ProductController {
      * PUT /products/:id
      */
     updateProduct = asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id } = req.params as { id: string };
         const data = req.body as UpdateProductRequest;
         const product = await this.productService.updateProduct(id, data);
 
@@ -72,7 +72,7 @@ export class ProductController {
      * DELETE /products/:id
      */
     deleteProduct = asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id } = req.params as { id: string };
         await this.productService.deleteProduct(id);
 
         res.status(200).json({

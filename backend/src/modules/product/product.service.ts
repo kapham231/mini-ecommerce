@@ -19,8 +19,18 @@ import {
     CreateProductRequest,
     UpdateProductRequest,
     ProductDTO,
-    PaginatedResponse,
 } from "./product.types";
+import { PaginatedResponse } from "../../common/types/pagination";
+
+/**
+ * Map Prisma product (with Decimal price) to ProductDTO (with number price)
+ */
+function mapToProductDTO(product: any): ProductDTO {
+    return {
+        ...product,
+        price: product.price.toNumber(),
+    };
+}
 
 export class ProductService {
     /**
@@ -36,8 +46,8 @@ export class ProductService {
         // Search in name and description
         if (search) {
             where.OR = [
-                { name: { contains: search, mode: "insensitive" } },
-                { description: { contains: search, mode: "insensitive" } },
+                { name: { contains: search } },
+                { description: { contains: search } },
             ];
         }
 
@@ -79,7 +89,7 @@ export class ProductService {
         });
 
         return {
-            data: products as ProductDTO[],
+            data: products.map(mapToProductDTO),
             pagination: {
                 page,
                 limit,
@@ -113,7 +123,7 @@ export class ProductService {
             throw new NotFoundError("Product not found");
         }
 
-        return product as ProductDTO;
+        return mapToProductDTO(product);
     }
 
     /**
@@ -167,7 +177,7 @@ export class ProductService {
             },
         });
 
-        return product as ProductDTO;
+        return mapToProductDTO(product);
     }
 
     /**
@@ -223,7 +233,7 @@ export class ProductService {
         if (data.description !== undefined) updateData.description = data.description;
         if (data.price) updateData.price = new Prisma.Decimal(data.price);
         if (data.stock !== undefined) updateData.stock = data.stock;
-        if (data.categoryId) updateData.categoryId = data.categoryId;
+        if (data.categoryId) updateData.category = { connect: { id: data.categoryId } };
         if (data.isActive !== undefined) updateData.isActive = data.isActive;
         updateData.updatedAt = new Date();
 
@@ -244,7 +254,7 @@ export class ProductService {
             },
         });
 
-        return updated as ProductDTO;
+        return mapToProductDTO(updated);
     }
 
     /**
