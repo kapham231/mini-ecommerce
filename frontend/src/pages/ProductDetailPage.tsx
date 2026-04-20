@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAppDispatch } from '~/app/hooks'
 import { getShopProductBySlug, shopProducts } from '~/data/shopCatalog'
 import { SiteFooter } from '~/components/layout/SiteFooter'
 import { SiteHeader } from '~/components/layout/SiteHeader'
+import { addItem } from '~/features/cart/cartSlice'
 import { formatVndFromDecimal } from '~/lib/formatPrice'
 import { ProductCard } from '~/components/products/ProductCard'
 
@@ -15,6 +17,7 @@ function calcDiscount(price: string, original?: string | null): number | null {
 }
 
 export function ProductDetailPage() {
+  const dispatch = useAppDispatch()
   const { slug } = useParams<{ slug: string }>()
   const product = useMemo(() => (slug ? getShopProductBySlug(slug) : undefined), [slug])
   const [quantity, setQuantity] = useState(1)
@@ -182,6 +185,18 @@ export function ProductDetailPage() {
                 <div className='mt-8 flex flex-wrap gap-3'>
                   <button
                     type='button'
+                    onClick={() => {
+                      if (!product) return
+                      dispatch(
+                        addItem({
+                          id: product.id,
+                          name: product.name,
+                          imageUrl: product.imageUrl ?? '/products/image1.png',
+                          unitPrice: product.price,
+                          quantity
+                        })
+                      )
+                    }}
                     className='inline-flex min-h-11 items-center justify-center rounded-2xl bg-kid-green px-8 text-sm font-bold text-white shadow-md transition hover:brightness-95'
                   >
                     Thêm {quantity} vào giỏ

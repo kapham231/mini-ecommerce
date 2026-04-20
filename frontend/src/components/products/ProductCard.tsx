@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { useAppDispatch } from '~/app/hooks'
+import { addItem } from '~/features/cart/cartSlice'
 import { formatVndFromDecimal } from '~/lib/formatPrice'
 import type { ProductSummary } from '~/types/product'
 
@@ -45,6 +47,7 @@ type ProductCardProps = {
 }
 
 export function ProductCard({ product, linkTo }: ProductCardProps) {
+  const dispatch = useAppDispatch()
   const detailPath = linkTo ?? `/products/${encodeURIComponent(product.slug)}`
   const brand = (product.brand ?? product.category.name).toUpperCase()
   const sku = product.sku ?? `SP-${product.id}`
@@ -114,6 +117,17 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
           <div className='mt-4 flex items-stretch gap-2'>
             <button
               type='button'
+              onClick={() =>
+                dispatch(
+                  addItem({
+                    id: product.id,
+                    name: product.name,
+                    imageUrl: product.imageUrl ?? '/products/image1.png',
+                    unitPrice: product.price,
+                    quantity: 1
+                  })
+                )
+              }
               className='min-h-11 flex-1 rounded-xl px-3 text-sm font-bold text-white transition hover:brightness-95 active:brightness-90'
               style={{ backgroundColor: CTA_GREEN }}
             >

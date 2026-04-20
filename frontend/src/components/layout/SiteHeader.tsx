@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useAppSelector } from '~/app/hooks'
 
 const ink = '#1e293b'
 
@@ -43,6 +44,8 @@ const navLinkClass =
   'shrink-0 rounded-lg px-1 py-1 text-[13px] font-semibold text-neutral-800/85 transition hover:bg-shop-blue/40 hover:text-neutral-900 sm:text-sm'
 
 export function SiteHeader() {
+  const cartCount = useAppSelector((s) => s.cart.items.reduce((sum, item) => sum + item.quantity, 0))
+
   return (
     <header className='sticky top-0 z-50 border-b border-shop-ink/8 bg-white font-sans antialiased shadow-sm'>
       <div className='border-b border-shop-ink/6 bg-kid-mint'>
@@ -100,13 +103,18 @@ export function SiteHeader() {
           >
             <IconUser className='h-5 w-5' />
           </Link>
-          <button
-            type='button'
-            className='inline-flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 transition hover:bg-shop-blue/55 hover:text-neutral-900 sm:h-10 sm:w-10'
+          <Link
+            to='/cart'
+            className='relative inline-flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 transition hover:bg-shop-blue/55 hover:text-neutral-900 sm:h-10 sm:w-10'
             aria-label='Giỏ hàng'
           >
             <IconCart className='h-5 w-5' />
-          </button>
+            {cartCount > 0 && (
+              <span className='absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-kid-green px-1 text-[11px] font-bold leading-none text-white'>
+                {cartCount > 99 ? '99+' : cartCount}
+              </span>
+            )}
+          </Link>
           <Link
             to='/login'
             className='ml-0.5 hidden min-h-9 items-center justify-center rounded-2xl bg-kid-green px-3 py-2 text-xs font-bold text-white shadow-sm ring-shop-ink/10 transition hover:brightness-95 sm:inline-flex sm:px-4 sm:text-sm'
