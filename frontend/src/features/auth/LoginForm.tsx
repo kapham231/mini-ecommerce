@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
-import { axiosInstance } from '~/lib/axios'
+import { login as loginRequest } from '~/lib/api/auth'
 import { saveAuthToStorage } from '~/lib/authStorage'
 import { useAppDispatch } from '~/app/hooks'
 import { setCredentials } from '~/features/auth/authSlice'
@@ -27,10 +27,7 @@ export function LoginForm() {
     setError(null)
     setIsLoading(true)
     try {
-      const { data } = await axiosInstance.post<AuthResponse>('/auth/login', {
-        email,
-        password
-      })
+      const data = await loginRequest({ email, password })
       const user = normalizeUser(data.user)
       dispatch(setCredentials({ accessToken: data.accessToken, user }))
       saveAuthToStorage(data.accessToken, user)

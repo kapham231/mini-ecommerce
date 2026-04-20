@@ -10,3 +10,13 @@ export type AuthResponse = {
 }
 
 export type RegisterSuccessResponse = AuthResponse | { message?: string }
+
+export function isAuthResponse(data: RegisterSuccessResponse): data is AuthResponse {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'accessToken' in data &&
+    'user' in data &&
+    typeof (data as AuthResponse).accessToken === 'string'
+  )
+}

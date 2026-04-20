@@ -1,21 +1,11 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
-import { axiosInstance } from '~/lib/axios'
+import { register as registerRequest } from '~/lib/api/auth'
 import { saveAuthToStorage } from '~/lib/authStorage'
 import { useAppDispatch } from '~/app/hooks'
 import { setCredentials } from '~/features/auth/authSlice'
-import type { AuthResponse, RegisterSuccessResponse } from '~/types/auth'
-
-function isAuthResponse(data: RegisterSuccessResponse): data is AuthResponse {
-  return (
-    typeof data === 'object' &&
-    data !== null &&
-    'accessToken' in data &&
-    'user' in data &&
-    typeof (data as AuthResponse).accessToken === 'string'
-  )
-}
+import type { AuthResponse } from '~/types/auth'
 
 function normalizeUser(user: AuthResponse['user']) {
   return {
@@ -38,20 +28,11 @@ export function RegisterForm() {
     setError(null)
     setIsLoading(true)
     try {
-      const { data } = await axiosInstance.post<RegisterSuccessResponse>('/auth/register', {
-        email,
-        password,
-        name
-      })
-
-      if (isAuthResponse(data)) {
-        const user = normalizeUser(data.user)
-        dispatch(setCredentials({ accessToken: data.accessToken, user }))
-        saveAuthToStorage(data.accessToken, user)
-        navigate('/')
-      } else {
-        navigate('/login')
-      }
+      const data = await registerRequest({ email, password, name })
+      const user = normalizeUser(data.user)
+      dispatch(setCredentials({ accessToken: data.accessToken, user }))
+      saveAuthToStorage(data.accessToken, user)
+      navigate('/')
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const msg = (err.response?.data as { message?: string })?.message ?? err.message ?? 'Đăng ký thất bại'
