@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
-import { axiosInstance } from '~/lib/axios'
+import { login as loginRequest } from '~/lib/api/auth'
 import { saveAuthToStorage } from '~/lib/authStorage'
 import { useAppDispatch } from '~/app/hooks'
 import { setCredentials } from '~/features/auth/authSlice'
@@ -27,10 +27,7 @@ export function LoginForm() {
     setError(null)
     setIsLoading(true)
     try {
-      const { data } = await axiosInstance.post<AuthResponse>('/auth/login', {
-        email,
-        password
-      })
+      const data = await loginRequest({ email, password })
       const user = normalizeUser(data.user)
       dispatch(setCredentials({ accessToken: data.accessToken, user }))
       saveAuthToStorage(data.accessToken, user)
@@ -50,20 +47,20 @@ export function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className='mx-auto flex w-full max-w-md flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900'
+      className='mx-auto flex w-full max-w-md flex-col gap-4 rounded-xl border border-shop-ink/10 bg-white p-6 shadow-sm'
     >
-      <h1 className='text-center text-2xl font-semibold text-gray-900 dark:text-gray-100'>Đăng nhập</h1>
+      <h1 className='text-center text-2xl font-extrabold text-shop-ink'>Đăng nhập</h1>
 
       {error && (
         <p
-          className='rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300'
+          className='rounded-md bg-red-50 px-3 py-2 text-sm text-red-700'
           role='alert'
         >
           {error}
         </p>
       )}
 
-      <label className='flex flex-col gap-1 text-left text-sm font-medium text-gray-700 dark:text-gray-300'>
+      <label className='flex flex-col gap-1 text-left text-sm font-medium text-shop-ink/80'>
         Email
         <input
           type='email'
@@ -72,11 +69,11 @@ export function LoginForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className='rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none ring-violet-500 focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100'
+          className='rounded-md border border-shop-ink/10 px-3 py-2 text-shop-ink outline-none ring-kid-mint'
         />
       </label>
 
-      <label className='flex flex-col gap-1 text-left text-sm font-medium text-gray-700 dark:text-gray-300'>
+      <label className='flex flex-col gap-1 text-left text-sm font-medium text-shop-ink/80'>
         Mật khẩu
         <input
           type='password'
@@ -85,21 +82,21 @@ export function LoginForm() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className='rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none ring-violet-500 focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100'
+          className='rounded-md border border-shop-ink/10 px-3 py-2 text-shop-ink outline-none ring-kid-mint'
         />
       </label>
 
       <button
         type='submit'
         disabled={isLoading}
-        className='rounded-md bg-violet-600 px-4 py-2 font-medium text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60'
+        className='rounded-md bg-kid-green px-4 py-2 font-medium text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60'
       >
         {isLoading ? 'Đang xử lý…' : 'Đăng nhập'}
       </button>
 
-      <p className='text-center text-sm text-gray-600 dark:text-gray-400'>
+      <p className='text-center text-sm text-shop-ink/80'>
         Chưa có tài khoản?{' '}
-        <Link to='/register' className='font-medium text-violet-600 hover:underline dark:text-violet-400'>
+        <Link to='/register' className='font-medium text-shop-teal hover:underline dark:text-kid-mint'>
           Đăng ký
         </Link>
       </p>
