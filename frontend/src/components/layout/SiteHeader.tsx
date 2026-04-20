@@ -46,9 +46,9 @@ export function SiteHeader() {
   return (
     <header className='sticky top-0 z-50 border-b border-shop-ink/8 bg-white font-sans antialiased shadow-sm'>
       <div className='border-b border-shop-ink/6 bg-kid-mint'>
-        <div className='mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-2 text-center text-[11px] text-neutral-700 sm:justify-between sm:px-6 sm:text-xs'>
+        <div className='mx-auto text-white flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-2 text-center text-[11px] text-neutral-700 sm:justify-between sm:px-6 sm:text-xs'>
           <span>Miễn phí vận chuyển đơn từ 500.000 ₫</span>
-          <span className='hidden sm:inline'>Hotline: 1900 636 787 · 8:00 – 21:00</span>
+          <span className='hidden text-white sm:inline'>Hotline: 1900 636 787 · 8:00 – 21:00</span>
         </div>
       </div>
 
@@ -80,9 +80,9 @@ export function SiteHeader() {
           <Link to='/#site-footer' className={navLinkClass}>
             Liên hệ
           </Link>
-          <Link to='/admin/products/new' className={`${navLinkClass} text-shop-tan`}>
+          {/* <Link to='/admin/products/new' className={`${navLinkClass} text-shop-tan`}>
             Form SP
-          </Link>
+          </Link> */}
         </nav>
 
         <div className='flex shrink-0 items-center justify-end gap-0.5 sm:gap-1.5'>

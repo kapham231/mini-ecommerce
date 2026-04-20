@@ -64,8 +64,8 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
         >
           {showBestSellerBadge && (
             <span
-              className='absolute left-3 top-3 z-10 rounded-full bg-shop-tan px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-shop-ink shadow-sm'
-              style={{ backgroundColor: '#FFD93D' }}
+              className='absolute text-[#2E7D32] left-3 top-3 z-10 rounded-full bg-shop-tan px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-shop-ink shadow-sm'
+              style={{ backgroundColor: '#E8F5E9' }}
             >
               Bán chạy
             </span>
