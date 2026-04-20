@@ -15,8 +15,8 @@ export function ToyCategoryCard({
 }: ToyCategoryCardProps) {
   const shell =
     variant === 'pink'
-      ? 'border-shop-teal/30 bg-shop-blue/40 hover:border-shop-teal/50 hover:bg-shop-blue/55'
-      : 'border-shop-teal/25 bg-shop-mint/90 hover:border-shop-teal/45 hover:bg-shop-mint'
+      ? 'border-shop-teal/35 bg-shop-mint/70 hover:border-shop-teal/50 hover:bg-shop-mint/90'
+      : 'border-shop-teal/25 bg-shop-mint/60 hover:border-shop-teal/40 hover:bg-shop-mint/80'
 
   return (
     <a

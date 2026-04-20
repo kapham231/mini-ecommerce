@@ -13,23 +13,9 @@ export function SectionHeading({
   title,
   description,
   align = 'center',
-  tone = 'mint',
   theme = 'kid',
   titleId,
 }: SectionHeadingProps) {
-  const dotKid =
-    tone === 'pink'
-      ? 'bg-kid-pink ring-kid-pink-soft'
-      : 'bg-kid-mint ring-kid-mint-soft'
-  const dotShop = 'bg-shop-teal ring-shop-blue/80'
-
-  const dot = theme === 'shop' ? dotShop : dotKid
-
-  const eyebrowCls =
-    theme === 'shop'
-      ? 'text-shop-ink/50'
-      : 'text-kid-ink/55'
-
   const titleCls =
     theme === 'shop' ? 'font-sans font-extrabold text-shop-ink' : 'font-display font-extrabold text-kid-ink'
 
@@ -45,8 +31,7 @@ export function SectionHeading({
       }
     >
       {eyebrow && (
-        <p className={`mb-2 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] ${eyebrowCls}`}>
-          <span className={`inline-block h-2 w-2 shrink-0 rounded-full ring-4 ${dot}`} aria-hidden />
+        <p className={`mb-2 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em]`}>
           {eyebrow}
         </p>
       )}

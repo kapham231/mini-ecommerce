@@ -15,13 +15,13 @@ export function FeaturedToyCard({
 }: FeaturedToyCardProps) {
   const tagStyles =
     accent === 'pink'
-      ? 'bg-kid-pink text-kid-ink ring-1 ring-kid-pink/40'
+      ? 'bg-kid-mint text-kid-ink ring-1 ring-kid-mint/50'
       : 'bg-kid-mint text-kid-ink ring-1 ring-kid-mint/50'
 
   const btnStyles =
     accent === 'pink'
-      ? 'border-kid-pink/40 bg-kid-pink-soft text-kid-ink hover:bg-kid-pink-soft/80'
-      : 'border-kid-mint/45 bg-kid-mint-soft text-kid-ink hover:bg-kid-mint-soft/80'
+      ? 'border-kid-green/60 bg-kid-green text-white hover:brightness-95'
+      : 'border-kid-green/60 bg-kid-green text-white hover:brightness-95'
 
   return (
     <article

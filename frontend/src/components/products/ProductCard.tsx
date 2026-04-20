@@ -2,26 +2,8 @@ import { Link } from 'react-router-dom'
 import { formatVndFromDecimal } from '~/lib/formatPrice'
 import type { ProductSummary } from '~/types/product'
 
-const ACCENT = '#A8DF8E'
-
-function HeartOutlineIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={`shrink-0 ${className ?? ''}`}
-      viewBox='0 0 24 24'
-      fill='none'
-      aria-hidden
-    >
-      <path
-        stroke='currentColor'
-        strokeWidth={1.75}
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        d='M21 8.25c0-2.485-2.015-4.5-4.5-4.5-1.64 0-3.065.873-3.84 2.165L12 6.09l-.66-1.125A4.488 4.488 0 0 0 7.5 3.75C5.015 3.75 3 5.765 3 8.25c0 5.942 9 11.25 9 11.25s9-5.308 9-11.25Z'
-      />
-    </svg>
-  )
-}
+const CTA_GREEN = '#43A047'
+const DETAIL_GREEN = '#43A047'
 
 function StarRow({ rating }: { rating: number }) {
   const full = Math.round(Math.min(5, Math.max(0, rating)))
@@ -30,13 +12,22 @@ function StarRow({ rating }: { rating: number }) {
       {Array.from({ length: 5 }, (_, i) => (
         <span
           key={i}
-          className={i < full ? 'text-amber-400' : 'text-shop-ink/15'}
+          className={i < full ? 'text-shop-tan' : 'text-shop-ink/15'}
           aria-hidden
         >
           ★
         </span>
       ))}
     </div>
+  )
+}
+
+function CloudDiscountBadge({ discount }: { discount: number }) {
+  return (
+    <span className='absolute right-3 top-3 z-10 inline-flex h-8 w-14 items-center justify-center text-[10px] font-extrabold text-white drop-shadow-sm'>
+      <img src='/icons/discount-cloud-green.svg' alt='' aria-hidden className='absolute inset-0 h-full w-full' />
+      <span className='relative'>-{discount}%</span>
+    </span>
   )
 }
 
@@ -62,74 +53,78 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
     product.discountPercent ?? inferDiscountPercent(product.price, original)
   const ratingVal = product.rating
   const showRating = typeof ratingVal === 'number' && ratingVal > 0
+  const showBestSellerBadge = brand === 'BÁN CHẠY' || brand === 'BAN CHAY' || brand === 'BEST SELLER'
 
   return (
-    <article className='flex h-full flex-col overflow-hidden rounded-2xl border border-shop-ink/10 bg-white shadow-shop-soft transition hover:-translate-y-0.5 hover:shadow-lg'>
+    <article className='flex h-full flex-col overflow-hidden rounded-2xl border border-shop-ink/10 bg-white shadow-[0_10px_20px_rgba(0,0,0,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(0,0,0,0.06)]'>
       <div className='flex flex-1 flex-col'>
         <Link
           to={detailPath}
-          className='group relative flex aspect-square items-center justify-center bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-kid-mint focus-visible:ring-offset-2'
+          className='group relative flex aspect-square items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-kid-mint focus-visible:ring-offset-2'
         >
-          {discount !== null && discount > 0 && (
+          {showBestSellerBadge && (
             <span
-              className='absolute right-3 top-3 z-10 rounded-lg px-2 py-1 text-[11px] font-extrabold text-shop-ink shadow-sm'
-              style={{ backgroundColor: ACCENT }}
+              className='absolute left-3 top-3 z-10 rounded-full bg-shop-tan px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-shop-ink shadow-sm'
+              style={{ backgroundColor: '#FFD93D' }}
             >
-              -{discount}%
+              Bán chạy
             </span>
           )}
+          {discount !== null && discount > 0 && <CloudDiscountBadge discount={discount} />}
           <img
             src={product.imageUrl ?? '/products/image1.png'}
             alt={product.name}
-            className='h-full w-full object-contain p-5 transition duration-300 group-hover:scale-[1.02]'
+            className='h-full w-full rounded-xl object-contain p-5 transition duration-300 group-hover:scale-[1.02]'
             loading='lazy'
           />
         </Link>
-        <div className='flex flex-1 flex-col px-4 pb-4 pt-3'>
-          <div className='flex items-start justify-between gap-2 text-[11px] text-shop-ink/45'>
-            <span className='truncate font-semibold uppercase'>{brand}</span>
+        <div className='flex flex-1 flex-col px-5 pb-5 pt-3.5'>
+          <div className='flex items-start justify-between gap-2 text-[10px] text-shop-ink/45'>
+            {!showBestSellerBadge && <span className='truncate font-semibold uppercase'>{brand}</span>}
             <span className='shrink-0 whitespace-nowrap'>Mã: {sku}</span>
           </div>
 
           <Link
             to={detailPath}
-            className='mt-2 font-sans text-[15px] font-semibold leading-snug text-shop-ink line-clamp-2 hover:text-shop-teal'
+            className='mt-2.5 font-sans text-lg font-extrabold leading-snug text-shop-ink line-clamp-2 hover:text-shop-teal'
           >
             {product.name}
           </Link>
 
           {showRating && typeof ratingVal === 'number' && (
-            <div className='mt-2'>
+            <div className='mt-1'>
               <StarRow rating={ratingVal} />
             </div>
           )}
 
-          <div className='mt-3 flex items-end justify-between gap-2'>
-            <span className='text-base font-extrabold text-[#7ACD53]'>
+          <div className='mt-1.5 flex items-end justify-start gap-2'>
+            <span className='text-lg font-extrabold' style={{ color: DETAIL_GREEN }}>
               {formatVndFromDecimal(product.price)}
             </span>
-            {original && (
-              <span className='text-sm text-shop-ink/35 line-through'>
+          </div>
+
+          {original && (
+            <div className='mt-1 flex items-center justify-start gap-2'>
+              <span className='text-xs text-shop-ink/55 line-through'>
                 {formatVndFromDecimal(original)}
               </span>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className='mt-4 flex items-stretch gap-2'>
             <button
               type='button'
-              className='min-h-11 flex-1 rounded-xl px-3 text-sm font-bold text-shop-ink transition hover:brightness-95 active:brightness-90'
-              style={{ backgroundColor: ACCENT }}
+              className='min-h-11 flex-1 rounded-xl px-3 text-sm font-bold text-white transition hover:brightness-95 active:brightness-90'
+              style={{ backgroundColor: CTA_GREEN }}
             >
               Thêm vào giỏ hàng
             </button>
             <button
               type='button'
               aria-label='Yêu thích'
-              className='flex w-11 shrink-0 items-center justify-center rounded-xl border-2 bg-white text-shop-ink transition hover:bg-slate-50'
-              style={{ borderColor: ACCENT, color: ACCENT }}
+              className='flex w-11 shrink-0 items-center justify-end rounded-xl transition hover:bg-slate-50'
             >
-              <HeartOutlineIcon className='h-5 w-5' />
+              <img src='/icons/heart-outline-green.svg' alt='' aria-hidden className='h-[30px] w-auto' />
             </button>
           </div>
         </div>

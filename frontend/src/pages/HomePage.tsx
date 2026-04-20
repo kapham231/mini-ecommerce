@@ -21,7 +21,7 @@ export function HomePage() {
   const { featured, secondary } = homeArticles
 
   return (
-    <div className='min-h-screen bg-slate-50'>
+    <div className='min-h-screen bg-shop-blue'>
       <SiteHeader />
 
       <HeroSection />
@@ -90,7 +90,7 @@ export function HomePage() {
             <div className='mt-10 flex justify-center'>
               <Link
                 to='/products'
-                className='inline-flex min-h-11 items-center justify-center rounded-2xl bg-shop-tan px-10 text-sm font-bold bg-[#A8DF8E] shadow-md transition hover:bg-shop-tan/90'
+                className='inline-flex min-h-11 items-center justify-center rounded-2xl bg-kid-green px-10 text-sm font-bold text-white shadow-md transition hover:brightness-95'
               >
                 Xem thêm
               </Link>
@@ -108,14 +108,14 @@ export function HomePage() {
             <div className='mt-10 grid gap-6 lg:grid-cols-2 lg:gap-8'>
               <a
                 href={featured.href}
-                className='group flex flex-col overflow-hidden rounded-[1.5rem] border border-shop-ink/8 bg-white shadow-shop-soft transition hover:shadow-lg lg:min-h-[420px]'
+                className='group flex flex-col overflow-hidden rounded-[1.5rem] bg-white shadow-shop-soft transition hover:shadow-lg lg:min-h-[420px]'
               >
-                <div className='relative min-h-[220px] flex-1 bg-slate-100 lg:min-h-[260px]'>
+                <div className='relative min-h-[220px] flex-1 lg:min-h-[260px]'>
                   <img
                     src={featured.imageSrc}
                     alt=''
                     aria-hidden
-                    className='h-full w-full object-contain p-8 transition duration-300 group-hover:scale-[1.02]'
+                    className='h-full w-full object-contain p-6 transition duration-300 group-hover:scale-[1.02]'
                     loading='lazy'
                   />
                 </div>
@@ -135,14 +135,14 @@ export function HomePage() {
                   <a
                     key={article.id}
                     href={article.href}
-                    className='group flex gap-4 overflow-hidden rounded-[1.25rem] border border-shop-ink/8 bg-white p-4 shadow-shop-soft transition hover:shadow-lg sm:gap-5 sm:p-5'
+                    className='group flex gap-4 overflow-hidden rounded-[1.25rem] bg-white p-4 shadow-shop-soft transition hover:shadow-lg sm:gap-5 sm:p-5'
                   >
-                    <div className='relative h-28 w-32 shrink-0 overflow-hidden rounded-xl bg-slate-100 sm:h-32 sm:w-36'>
+                    <div className='relative h-28 w-32 shrink-0 overflow-hidden rounded-xl sm:h-32 sm:w-36'>
                       <img
                         src={article.imageSrc}
                         alt=''
                         aria-hidden
-                        className='h-full w-full object-contain p-3 transition group-hover:scale-[1.03]'
+                        className='h-full w-full p-2 transition group-hover:scale-[1.03]'
                         loading='lazy'
                       />
                     </div>

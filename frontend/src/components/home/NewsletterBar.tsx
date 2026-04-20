@@ -1,9 +1,9 @@
 export function NewsletterBar() {
   return (
-    <section className='border-y border-shop-ink/10 bg-shop-tan' aria-labelledby='newsletter-heading'>
+    <section className='border-y border-shop-ink/10 bg-white' aria-labelledby='newsletter-heading'>
       <div className='mx-auto flex max-w-6xl flex-col items-stretch gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-10'>
         <div className='text-center sm:text-left'>
-          <h2 id='newsletter-heading' className='font-serif text-2xl sm:text-[1.65rem]'>
+          <h2 id='newsletter-heading' className='font-sans text-2xl font-extrabold text-shop-ink'>
             Bản tin Kidozone
           </h2>
           <p className='mt-1 text-sm'>
@@ -23,11 +23,11 @@ export function NewsletterBar() {
             type='email'
             autoComplete='email'
             placeholder='Email của bạn'
-            className='min-h-11 w-full flex-1 rounded-2xl border-0 bg-white/95 px-4 text-sm text-shop-ink shadow-sm placeholder:text-shop-ink/40 focus:outline-none focus:ring-2 focus:ring-white/80'
+            className='min-h-11 w-full flex-1 rounded-2xl border-0 bg-white/95 px-4 text-sm text-shop-ink shadow-sm placeholder:text-shop-ink/40 focus:outline-none focus:ring-2 focus:ring-shop-ink/10 focus:ring-offset-2 focus:ring-offset-white'
           />
           <button
             type='submit'
-            className='min-h-11 shrink-0 rounded-2xl bg-shop-ink px-6 text-sm font-bold bg-[#A8DF8E] shadow-md transition hover:bg-shop-ink/90'
+            className='min-h-11 shrink-0 rounded-2xl bg-kid-green px-6 text-sm font-bold text-white shadow-md transition hover:brightness-95'
           >
             Đăng ký
           </button>

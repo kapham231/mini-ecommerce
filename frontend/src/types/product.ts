@@ -10,13 +10,10 @@ export type ProductSummary = {
   imageUrl: string | null
   categoryId: number
   category: CategorySummary
-  /** Giá niêm yết (gạch ngang), optional */
   originalPrice?: string | null
-  /** % giảm trên badge góc; không có thì suy từ originalPrice */
   discountPercent?: number | null
   sku?: string | null
   brand?: string | null
-  /** Hiển thị sao (optional) */
   rating?: number | null
 }
 

@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 
-/** Màu chữ tối cố định — tránh chữ trắng / tương phản kém do cascade hoặc token chưa áp dụng */
-const ink = '#2c2418'
+const ink = '#1e293b'
 
 function IconSearch({ className }: { className?: string }) {
   return (
@@ -46,7 +45,7 @@ const navLinkClass =
 export function SiteHeader() {
   return (
     <header className='sticky top-0 z-50 border-b border-shop-ink/8 bg-white font-sans antialiased shadow-sm'>
-      <div className='border-b border-shop-ink/6 bg-[#A8DF8E]'>
+      <div className='border-b border-shop-ink/6 bg-kid-mint'>
         <div className='mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-2 text-center text-[11px] text-neutral-700 sm:justify-between sm:px-6 sm:text-xs'>
           <span>Miễn phí vận chuyển đơn từ 500.000 ₫</span>
           <span className='hidden sm:inline'>Hotline: 1900 636 787 · 8:00 – 21:00</span>
@@ -110,8 +109,7 @@ export function SiteHeader() {
           </button>
           <Link
             to='/login'
-            style={{ color: ink }}
-            className='ml-0.5 hidden min-h-9 items-center justify-center rounded-2xl bg-[#A8DF8E] px-3 py-2 text-xs font-bold shadow-sm ring-shop-ink/10 transition hover:bg-[#98c97c] sm:inline-flex sm:px-4 sm:text-sm'
+            className='ml-0.5 hidden min-h-9 items-center justify-center rounded-2xl bg-kid-green px-3 py-2 text-xs font-bold text-white shadow-sm ring-shop-ink/10 transition hover:brightness-95 sm:inline-flex sm:px-4 sm:text-sm'
           >
             Đăng nhập
           </Link>

@@ -1,84 +1,102 @@
 import { Link } from 'react-router-dom'
 
 export function SiteFooter() {
+  const linkColumns = [
+    {
+      title: 'Về Kidozone',
+      links: [
+        { label: 'Câu chuyện thương hiệu', href: '#site-footer' },
+        { label: 'Điều khoản sử dụng', href: '#site-footer' },
+        { label: 'Chính sách bảo mật', href: '#site-footer' },
+        { label: 'Tùy chọn quyền riêng tư', href: '#site-footer' },
+        { label: 'Cài đặt cookie', href: '#site-footer' },
+      ],
+    },
+    {
+      title: 'Tài khoản',
+      links: [
+        { label: 'Đăng nhập', to: '/login' },
+        { label: 'Đăng ký', to: '/register' },
+        { label: 'Theo dõi đơn hàng', href: '#site-footer' },
+        { label: 'Danh sách yêu thích', href: '#site-footer' },
+      ],
+    },
+    {
+      title: 'Khám phá',
+      links: [
+        { label: 'Góc đồ chơi an toàn', href: '#site-footer' },
+        { label: 'Hoạt động DIY', href: '#site-footer' },
+        { label: 'Tô màu & vận động', href: '#site-footer' },
+      ],
+    },
+    {
+      title: 'Hỗ trợ',
+      links: [
+        { label: 'Tư vấn chọn quà', href: '#site-footer' },
+        { label: 'Trung tâm trợ giúp', href: '#site-footer' },
+        { label: 'Vận chuyển', href: '#site-footer' },
+        { label: 'Đổi trả', href: '#site-footer' },
+        { label: 'Liên hệ', href: '#site-footer' },
+      ],
+    },
+  ]
+  const socials = ['X', 'F', 'P', 'IG', 'T', 'YT']
+
   return (
-    <footer id='site-footer' className='border-t border-shop-ink/10 bg-white'>
-      <div className='mx-auto max-w-6xl px-4 py-12 sm:px-6'>
-        <div className='grid gap-10 sm:grid-cols-2 lg:grid-cols-5'>
-          <div className='lg:col-span-2'>
-            <p className='font-sans text-2xl font-extrabold text-shop-ink'>Kidozone</p>
-            <p className='mt-2 max-w-sm text-sm leading-relaxed text-shop-ink/65'>
-              Thú bông và đồ chơi an toàn — màu pastel dịu mắt, giao diện mua sắm đơn giản cho cả gia đình.
-            </p>
-          </div>
-          <div>
-            <p className='text-xs font-bold uppercase tracking-wide text-shop-ink/45'>Cửa hàng</p>
-            <ul className='mt-3 space-y-2 text-sm'>
-              <li>
-                <Link to='/' className='text-shop-ink/65 transition hover:text-shop-ink'>
-                  Trang chủ
-                </Link>
-              </li>
-              <li>
-                <Link to='/#categories' className='text-shop-ink/65 transition hover:text-shop-ink'>
-                  Danh mục
-                </Link>
-              </li>
-              <li>
-                <Link to='/products' className='text-shop-ink/65 transition hover:text-shop-ink'>
-                  Sản phẩm
-                </Link>
-              </li>
-              <li>
-                <a href='#featured' className='text-shop-ink/65 transition hover:text-shop-ink'>
-                  Nổi bật
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p className='text-xs font-bold uppercase tracking-wide text-shop-ink/45'>Hỗ trợ</p>
-            <ul className='mt-3 space-y-2 text-sm'>
-              <li>
-                <a href='#site-footer' className='text-shop-ink/65 transition hover:text-shop-ink'>
-                  Câu hỏi thường gặp
-                </a>
-              </li>
-              <li>
-                <a href='#site-footer' className='text-shop-ink/65 transition hover:text-shop-ink'>
-                  Đổi trả
-                </a>
-              </li>
-              <li>
-                <a href='#site-footer' className='text-shop-ink/65 transition hover:text-shop-ink'>
-                  Theo dõi đơn
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p className='text-xs font-bold uppercase tracking-wide text-shop-ink/45'>Tài khoản</p>
-            <ul className='mt-3 space-y-2 text-sm'>
-              <li>
-                <Link to='/login' className='text-shop-ink/65 transition hover:text-shop-ink'>
-                  Đăng nhập
-                </Link>
-              </li>
-              <li>
-                <Link to='/register' className='text-shop-ink/65 transition hover:text-shop-ink'>
-                  Đăng ký
-                </Link>
-              </li>
-            </ul>
+    <footer id='site-footer' className='border-t border-white/25 bg-kid-green text-white'>
+      <div className='relative mx-auto max-w-6xl px-4 pb-6 pt-10 sm:px-6 sm:pt-12'>
+        <img
+          src='/mascot/mascot_outline.png'
+          alt=''
+          aria-hidden
+          className='pointer-events-none absolute right-24 top-2 h-64 w-auto object-contain opacity-95 lg:block'
+        />
+
+        <div className='grid gap-10 border-b border-white/30 pb-8 lg:grid-cols-[1fr_320px]'>
+          <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-4'>
+            {linkColumns.map((column) => (
+              <div key={column.title}>
+                <h3 className='text-xl font-extrabold leading-tight text-white'>{column.title}</h3>
+                <ul className='mt-3 space-y-1.5'>
+                  {column.links.map((item) => (
+                    <li key={item.label}>
+                      {item.to ? (
+                        <Link to={item.to} className='text-sm text-white/90 transition hover:text-white'>
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <a href={item.href ?? '#site-footer'} className='text-sm text-white/90 transition hover:text-white'>
+                          {item.label}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className='mt-12 flex flex-col items-center justify-between gap-4 border-t border-shop-ink/10 pt-8 sm:flex-row'>
-          <div className='flex items-center gap-2'>
-            <img src='/mascot/mascot_3.svg' alt='' className='h-8 w-auto opacity-90' />
-            <span className='font-sans text-lg font-bold text-shop-ink'>Kidozone</span>
+        <div className='pt-7'>
+          <div className='flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between'>
+            <img src='/logos/logo_outline.png' alt='Kidozone' className='h-12 w-auto object-contain' />
+            <div className='flex items-center gap-3'>
+              <span className='text-3xl font-extrabold tracking-tight text-white'>@kidozone</span>
+              <div className='flex items-center gap-2.5'>
+                {socials.map((item) => (
+                  <a
+                    key={item}
+                    href='#site-footer'
+                    className='inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-white/70 bg-white px-1 text-[10px] font-bold uppercase text-kid-green transition hover:brightness-95'
+                    aria-label={item}
+                  >
+                    {item}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
-          <p className='text-center text-sm text-shop-ink/50 sm:text-right'>
+          <p className='mt-5 border-t border-white/30 pt-4 text-center text-sm text-white/90'>
             © {new Date().getFullYear()} Kidozone. Bảo lưu mọi quyền.
           </p>
         </div>
