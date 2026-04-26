@@ -77,10 +77,13 @@ export function SiteHeader() {
           <Link to='/products' className={navLinkClass}>
             Sản phẩm
           </Link>
-          <Link to='/#news' className={navLinkClass}>
+          <Link to='/news' className={navLinkClass}>
             Tin tức
           </Link>
-          <Link to='/#site-footer' className={navLinkClass}>
+          <Link to='/blog/articles' className={navLinkClass}>
+            Bài viết
+          </Link>
+          <Link to='/contact' className={navLinkClass}>
             Liên hệ
           </Link>
           {/* <Link to='/admin/products/new' className={`${navLinkClass} text-shop-tan`}>

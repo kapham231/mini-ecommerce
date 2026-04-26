@@ -24,9 +24,9 @@ export function SiteFooter() {
     {
       title: 'Khám phá',
       links: [
-        { label: 'Góc đồ chơi an toàn', href: '#site-footer' },
-        { label: 'Hoạt động DIY', href: '#site-footer' },
-        { label: 'Tô màu & vận động', href: '#site-footer' },
+        { label: 'Tin tức', to: '/news' },
+        { label: 'Bài viết', to: '/blog/articles' },
+        { label: 'Sản phẩm', to: '/products' },
       ],
     },
     {
@@ -36,7 +36,7 @@ export function SiteFooter() {
         { label: 'Trung tâm trợ giúp', href: '#site-footer' },
         { label: 'Vận chuyển', href: '#site-footer' },
         { label: 'Đổi trả', href: '#site-footer' },
-        { label: 'Liên hệ', href: '#site-footer' },
+        { label: 'Liên hệ', to: '/contact' },
       ],
     },
   ]

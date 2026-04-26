@@ -1,8 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAppSelector } from '~/app/hooks'
 import { AdminProductFormPage } from '~/pages/AdminProductFormPage'
+import { BlogArticlesPage } from '~/pages/BlogArticlesPage'
+import { ContactPage } from '~/pages/ContactPage'
 import { HomePage } from '~/pages/HomePage'
 import { LoginPage } from '~/pages/LoginPage'
+import { NewsPage } from '~/pages/NewsPage'
 import { ProductDetailPage } from '~/pages/ProductDetailPage'
 import { ProductsPage } from '~/pages/ProductsPage'
 import { RegisterPage } from '~/pages/RegisterPage'
@@ -17,6 +20,9 @@ function AppRoutes() {
       <Route path='/products' element={<ProductsPage />} />
       <Route path='/products/:slug' element={<ProductDetailPage />} />
       <Route path='/admin/products/new' element={<AdminProductFormPage />} />
+      <Route path='/news' element={<NewsPage />} />
+      <Route path='/blog/articles' element={<BlogArticlesPage />} />
+      <Route path='/contact' element={<ContactPage />} />
       <Route path='/login' element={isAuthenticated ? <Navigate to='/' replace /> : <LoginPage />} />
       <Route path='/register' element={isAuthenticated ? <Navigate to='/' replace /> : <RegisterPage />} />
       <Route path='/cart' element={<CartPage />} />
