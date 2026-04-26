@@ -141,7 +141,7 @@ export class ProductService {
 
         // Check if product name already exists (case-insensitive)
         const existingProduct = await prisma.product.findFirst({
-            where: { name: { equals: data.name, mode: "insensitive" } },
+            where: { name: data.name },
         });
 
         if (existingProduct) {
@@ -210,7 +210,7 @@ export class ProductService {
             if (data.name !== product.name) {
                 const existingProduct = await prisma.product.findFirst({
                     where: {
-                        name: { equals: data.name, mode: "insensitive" },
+                        name: data.name,
                         id: { not: id }
                     },
                 });

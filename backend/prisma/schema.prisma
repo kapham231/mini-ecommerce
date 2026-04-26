@@ -31,6 +31,7 @@ model User {
   updatedAt DateTime @default(now()) @updatedAt
 
   orders Order[] // A user has a lot of orders
+  cart   Cart?
 }
 
 model Category {
@@ -62,12 +63,40 @@ model Product {
   updatedAt DateTime @default(now()) @updatedAt
 
   orderItems OrderItem[] // A Order Cart has a lot of products
+  cartItems  CartItem[]
+}
+
+// Cart
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String @id @default(uuid())
+  cartId    String
+  productId String
+  quantity  Int
+
+  cart    Cart    @relation(fields: [cartId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+  @@index([cartId])
 }
 
 // Static Order Status
 enum OrderStatus {
   PENDING
-  CONFIRMED
+  PAID
+  SHIPPED
+  COMPLETED
   CANCELLED
 }
 
@@ -79,20 +108,30 @@ model Order {
   address     String
   phone       String
 
+  paidAt      DateTime?
+  shippedAt   DateTime?
+  completedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
   user  User        @relation(fields: [userId], references: [id])
   items OrderItem[]
+
+  @@index([userId])
 }
 
 model OrderItem {
   id        String  @id @default(uuid())
   orderId   String
   productId String
+  name      String
+  imageUrl  String?
   quantity  Int
   price     Decimal @db.Decimal(10, 2)
 
   order   Order   @relation(fields: [orderId], references: [id])
   product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
 }

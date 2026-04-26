@@ -47,7 +47,7 @@ export class CategoryService {
     async createCategory(data: CreateCategoryRequest): Promise<CategoryDTO> {
         // Check if category name already exists (case-insensitive)
         const existingCategory = await prisma.category.findFirst({
-            where: { name: { equals: data.name, mode: "insensitive" } },
+            where: { name: data.name },
         });
 
         if (existingCategory) {
@@ -92,7 +92,7 @@ export class CategoryService {
             if (data.name !== category.name) {
                 const existingCategory = await prisma.category.findFirst({
                     where: {
-                        name: { equals: data.name, mode: "insensitive" },
+                        name: data.name,
                         id: { not: id }
                     },
                 });
