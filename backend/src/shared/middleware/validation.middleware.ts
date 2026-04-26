@@ -26,7 +26,12 @@ export const validate = (options: ValidateOptions) => {
             // Validate query
             if (options.query) {
                 const parsedQuery = await options.query.parseAsync(req.query);
-                req.query = parsedQuery as any;
+                Object.defineProperty(req, "query", {
+                    value: parsedQuery,
+                    writable: true,
+                    enumerable: true,
+                    configurable: true
+                });
             }
 
             // Validate params
