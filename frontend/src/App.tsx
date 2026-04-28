@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { AdminDashboardPage } from '~/admin/pages/AdminDashboardPage'
+import { AdminProductFormPage } from '~/admin/pages/AdminProductFormPage'
+import { AdminProductsPage } from '~/admin/pages/AdminProductsPage'
 import { useAppSelector } from '~/app/hooks'
-import { AdminProductFormPage } from '~/pages/AdminProductFormPage'
 import { BlogArticlesPage } from '~/pages/BlogArticlesPage'
 import { ContactPage } from '~/pages/ContactPage'
 import { HomePage } from '~/pages/HomePage'
@@ -19,6 +21,8 @@ function AppRoutes() {
       <Route path='/' element={<HomePage />} />
       <Route path='/products' element={<ProductsPage />} />
       <Route path='/products/:slug' element={<ProductDetailPage />} />
+      <Route path='/admin' element={<AdminDashboardPage />} />
+      <Route path='/admin/products' element={<AdminProductsPage />} />
       <Route path='/admin/products/new' element={<AdminProductFormPage />} />
       <Route path='/news' element={<NewsPage />} />
       <Route path='/blog/articles' element={<BlogArticlesPage />} />

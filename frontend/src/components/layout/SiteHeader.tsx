@@ -86,9 +86,6 @@ export function SiteHeader() {
           <Link to='/contact' className={navLinkClass}>
             Liên hệ
           </Link>
-          {/* <Link to='/admin/products/new' className={`${navLinkClass} text-shop-tan`}>
-            Form SP
-          </Link> */}
         </nav>
 
         <div className='flex shrink-0 items-center justify-end gap-0.5 sm:gap-1.5'>

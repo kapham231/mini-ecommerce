@@ -2,25 +2,44 @@
  * DTOs aligned with backend Prisma/JSON (Decimal → string).
  */
 
+export type ApiEnvelope<T> = {
+  success: boolean
+  data: T
+  message?: string
+}
+
+export type PaginationMeta = {
+  page: number
+  limit: number
+  total: number
+  pages: number
+}
+
+export type PaginatedApiEnvelope<T> = ApiEnvelope<T> & {
+  pagination: PaginationMeta
+}
+
 export type CategoryApi = {
-  id: number
+  id: string
   name: string
   slug: string
+  description?: string | null
+  isActive?: boolean
   createdAt?: string
   updatedAt?: string
 }
 
 export type ProductApi = {
-  id: number
+  id: string
   name: string
   slug: string
   description: string | null
-  /** Serialized decimal, e.g. "129000.00" */
-  price: string
+  /** Backend currently returns number after Decimal mapping. */
+  price: number
   stock: number
-  imageUrl: string | null
+  imageUrl?: string | null
   isActive?: boolean
-  categoryId: number
+  categoryId: string
   category?: CategoryApi
   createdAt?: string
   updatedAt?: string
@@ -30,7 +49,7 @@ export type ProductQueryParams = {
   page?: number
   limit?: number
   search?: string
-  categoryId?: number
+  categoryId?: string
   minPrice?: number
   maxPrice?: number
   sortBy?: string
@@ -39,19 +58,17 @@ export type ProductQueryParams = {
 
 export type CreateCategoryBody = {
   name: string
-  slug: string
+  description?: string
 }
 
 export type UpdateCategoryBody = Partial<CreateCategoryBody>
 
 export type CreateProductBody = {
   name: string
-  slug: string
   description?: string
   price: number
   stock: number
-  categoryId: number
-  imageUrl?: string
+  categoryId: string
 }
 
 export type UpdateProductBody = Partial<CreateProductBody>
