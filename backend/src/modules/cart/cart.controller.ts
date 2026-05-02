@@ -19,7 +19,7 @@ export class CartController {
      */
     getCart = asyncHandler(async (req: Request, res: Response) => {
         // User ID from auth middleware (assuming it's set)
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(401).json({
                 success: false,
@@ -40,7 +40,7 @@ export class CartController {
      * Add item to cart
      */
     addToCart = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(401).json({
                 success: false,
@@ -62,7 +62,7 @@ export class CartController {
      * Update cart item quantity
      */
     updateCartItem = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(401).json({
                 success: false,
@@ -85,7 +85,7 @@ export class CartController {
      * Remove item from cart
      */
     removeCartItem = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(401).json({
                 success: false,
