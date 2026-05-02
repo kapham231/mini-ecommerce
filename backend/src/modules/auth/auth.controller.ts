@@ -46,7 +46,7 @@ export class AuthController {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: 3 * 24 * 60 * 60 * 1000,
+            maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days (miliseconds)
         });
 
         res.status(200).json({
