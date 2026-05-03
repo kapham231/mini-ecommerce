@@ -17,9 +17,11 @@ export class UserService {
      * Get all users with pagination
      */
     async getUsers(query: UserQuery): Promise<PaginatedResponse<UserDTO>> {
-        const { search, role, page, limit, sortBy, order } = query;
+        const { search, role, isActive, page, limit, sortBy, order } = query;
 
-        const where: Prisma.UserWhereInput = {};
+        const where: Prisma.UserWhereInput = {
+            deletedAt: null, // Only get non-deleted users
+        };
 
         // Search by name or email
         if (search) {
@@ -32,6 +34,11 @@ export class UserService {
         // Filter by role
         if (role) {
             where.role = role;
+        }
+
+        // Filter by active status
+        if (isActive !== undefined) {
+            where.isActive = isActive;
         }
 
         const total = await prisma.user.count({ where });
@@ -49,14 +56,21 @@ export class UserService {
                 email: true,
                 role: true,
                 phone: true,
-                address: true,
+                avatar: true,
+                isActive: true,
+                isVerified: true,
+                lastLoginAt: true,
                 createdAt: true,
                 updatedAt: true,
+                addresses: {
+                    where: { isDefault: true },
+                    take: 1
+                }
             },
         });
 
         return {
-            data: users as UserDTO[],
+            data: users as unknown as UserDTO[],
             pagination: {
                 page,
                 limit,
@@ -70,17 +84,21 @@ export class UserService {
     * Get single user
     */
     async getUserById(id: string): Promise<UserDTO> {
-        const user = await prisma.user.findUnique({
-            where: { id },
+        const user = await prisma.user.findFirst({
+            where: { id, deletedAt: null },
             select: {
                 id: true,
                 name: true,
                 email: true,
                 role: true,
                 phone: true,
-                address: true,
+                avatar: true,
+                isActive: true,
+                isVerified: true,
+                lastLoginAt: true,
                 createdAt: true,
                 updatedAt: true,
+                addresses: true,
             },
         });
 
@@ -115,7 +133,10 @@ export class UserService {
                 password: hashedPassword,
                 role: data.role || "USER",
                 phone: data.phone || null,
-                address: data.address || null,
+                avatar: data.avatar || null,
+                cart: {
+                    create: {} // Auto create cart
+                }
             },
             select: {
                 id: true,
@@ -123,13 +144,16 @@ export class UserService {
                 email: true,
                 role: true,
                 phone: true,
-                address: true,
+                avatar: true,
+                isActive: true,
+                isVerified: true,
+                lastLoginAt: true,
                 createdAt: true,
                 updatedAt: true,
             },
         });
 
-        return user as UserDTO;
+        return user as unknown as UserDTO;
     }
 
     /**
@@ -137,7 +161,9 @@ export class UserService {
     */
     async updateUser(id: string, data: UpdateUserRequest): Promise<UserDTO> {
 
-        const user = await prisma.user.findUnique({ where: { id } });
+        const user = await prisma.user.findFirst({ 
+            where: { id, deletedAt: null } 
+        });
 
         if (!user) {
             throw new NotFoundError("User not found");
@@ -167,7 +193,9 @@ export class UserService {
 
         if (data.role) updateData.role = data.role;
         if (data.phone !== undefined) updateData.phone = data.phone;
-        if (data.address !== undefined) updateData.address = data.address;
+        if (data.avatar !== undefined) updateData.avatar = data.avatar;
+        if (data.isActive !== undefined) updateData.isActive = data.isActive;
+        if (data.isVerified !== undefined) updateData.isVerified = data.isVerified;
 
         updateData.updatedAt = new Date();
 
@@ -180,9 +208,13 @@ export class UserService {
                 email: true,
                 role: true,
                 phone: true,
-                address: true,
+                avatar: true,
+                isActive: true,
+                isVerified: true,
+                lastLoginAt: true,
                 createdAt: true,
                 updatedAt: true,
+                addresses: true,
             },
         });
 
@@ -193,14 +225,21 @@ export class UserService {
     * Delete user (hard delete)
     */
     async deleteUser(id: string): Promise<void> {
-        const user = await prisma.user.findUnique({ where: { id } });
+        const user = await prisma.user.findFirst({ 
+            where: { id, deletedAt: null } 
+        });
 
         if (!user) {
             throw new NotFoundError("User not found");
         }
 
-        await prisma.user.delete({
+        // Soft delete
+        await prisma.user.update({
             where: { id },
+            data: {
+                deletedAt: new Date(),
+                isActive: false,
+            },
         });
     }
 }

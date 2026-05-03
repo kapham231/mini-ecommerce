@@ -24,6 +24,8 @@ import { createProductRouter } from "./modules/product/product.routes";
 import { createCategoryRouter } from "./modules/category/category.routes";
 import { createCartRouter } from "./modules/cart/cart.routes";
 import { createOrderRouter } from "./modules/order/order.routes";
+import { createAddressRouter } from "./modules/address/address.routes";
+import { createUserRouter } from "./modules/user/user.routes";
 
 dotenv.config();
 
@@ -59,6 +61,8 @@ export function createApp(): Express {
     // This keeps modules decoupled and easily testable
 
     app.use("/api/auth", createAuthRouter());
+    app.use("/api/users", createUserRouter());
+    app.use("/api/addresses", createAddressRouter());
     app.use("/api/products", createProductRouter());
     app.use("/api/categories", createCategoryRouter());
     app.use("/api/cart", createCartRouter());
