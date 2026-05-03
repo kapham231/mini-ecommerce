@@ -17,6 +17,9 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
 import { errorMiddleware } from "./shared/middleware";
+import swaggerUi from "swagger-ui-express";
+import { generateOpenAPIDocument } from "./shared/docs/openapi";
+import { registerRoutes } from "./shared/docs/register";
 
 // Module route creators
 import { createAuthRouter } from "./modules/auth/auth.routes";
@@ -72,6 +75,26 @@ export function createApp(): Express {
     app.get("/health", (_req, res) => {
         res.json({ status: "healthy", timestamp: new Date().toISOString() });
     });
+
+    // ============================================
+    // Swagger API Documentation
+    // ============================================
+    if (process.env.NODE_ENV !== 'production') {
+        // Register all schemas and routes to OpenAPI registry
+        registerRoutes();
+        
+        // Generate document
+        const openAPIDocument = generateOpenAPIDocument();
+        
+        // Serve Swagger UI
+        app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openAPIDocument));
+        
+        // Expose raw JSON spec
+        app.get('/api-docs.json', (_req, res) => {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(openAPIDocument);
+        });
+    }
 
     // ============================================
     // 404 Handler
