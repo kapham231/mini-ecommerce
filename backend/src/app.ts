@@ -20,6 +20,8 @@ import { errorMiddleware } from "./shared/middleware";
 import swaggerUi from "swagger-ui-express";
 import { generateOpenAPIDocument } from "./shared/docs/openapi";
 import { registerRoutes } from "./shared/docs/register";
+import passport from "passport";
+import "./shared/config/passport"; // Load configuration
 
 // Module route creators
 import { createAuthRouter } from "./modules/auth/auth.routes";
@@ -45,6 +47,7 @@ export function createApp(): Express {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());
+    app.use(passport.initialize());
 
     // ============================================
     // Basic Routes

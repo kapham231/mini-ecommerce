@@ -148,4 +148,78 @@ export class AuthService {
 
         return user;
     }
+
+    /**
+     * Handle social login (Google/Facebook)
+     * Finds or creates a user based on provider information
+     */
+    async upsertSocialUser(data: {
+        email: string;
+        name: string;
+        avatar?: string;
+        provider: string;
+        providerAccountId: string;
+        access_token?: string;
+        refresh_token?: string;
+    }) {
+        const { email, name, avatar, provider, providerAccountId, access_token, refresh_token } = data;
+
+        // 1. Find user by email
+        let user = await prisma.user.findUnique({
+            where: { email },
+            include: { accounts: true }
+        });
+
+        if (user) {
+            // Check if account already exists for this provider
+            const existingAccount = user.accounts.find(
+                acc => acc.provider === provider && acc.providerAccountId === providerAccountId
+            );
+
+            if (!existingAccount) {
+                // Link new provider account to existing user
+                await prisma.account.create({
+                    data: {
+                        userId: user.id,
+                        type: "oauth",
+                        provider,
+                        providerAccountId,
+                        access_token,
+                        refresh_token
+                    }
+                });
+            }
+        } else {
+            // 2. Create new user and account
+            user = await prisma.user.create({
+                data: {
+                    email,
+                    name,
+                    avatar,
+                    isVerified: true, // Social accounts are usually pre-verified
+                    cart: {
+                        create: {}
+                    },
+                    accounts: {
+                        create: {
+                            type: "oauth",
+                            provider,
+                            providerAccountId,
+                            access_token,
+                            refresh_token
+                        }
+                    }
+                },
+                include: { accounts: true }
+            });
+        }
+
+        // Update last login
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() },
+        });
+
+        return user;
+    }
 }
