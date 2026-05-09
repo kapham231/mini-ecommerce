@@ -1,5 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { AdminCategoryEditPage } from '~/admin/pages/AdminCategoryEditPage'
+import { AdminCategoryFormPage } from '~/admin/pages/AdminCategoryFormPage'
+import { AdminCategoriesPage } from '~/admin/pages/AdminCategoriesPage'
 import { AdminDashboardPage } from '~/admin/pages/AdminDashboardPage'
+import { AdminProductEditPage } from '~/admin/pages/AdminProductEditPage'
 import { AdminProductFormPage } from '~/admin/pages/AdminProductFormPage'
 import { AdminProductsPage } from '~/admin/pages/AdminProductsPage'
 import { useAppSelector } from '~/app/hooks'
@@ -23,7 +27,11 @@ function AppRoutes() {
       <Route path='/products/:slug' element={<ProductDetailPage />} />
       <Route path='/admin' element={<AdminDashboardPage />} />
       <Route path='/admin/products' element={<AdminProductsPage />} />
+      <Route path='/admin/categories' element={<AdminCategoriesPage />} />
       <Route path='/admin/products/new' element={<AdminProductFormPage />} />
+      <Route path='/admin/categories/new' element={<AdminCategoryFormPage />} />
+      <Route path='/admin/categories/:id/edit' element={<AdminCategoryEditPage />} />
+      <Route path='/admin/products/:id/edit' element={<AdminProductEditPage />} />
       <Route path='/news' element={<NewsPage />} />
       <Route path='/blog/articles' element={<BlogArticlesPage />} />
       <Route path='/contact' element={<ContactPage />} />

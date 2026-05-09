@@ -64,7 +64,7 @@ function StatCard({
   return (
     <article className='rounded-[1.5rem] border border-shop-ink/10 bg-white p-5 shadow-shop-soft'>
       <p className='text-sm font-semibold text-shop-ink/55'>{label}</p>
-      <p className='mt-3 font-sans text-3xl font-extrabold text-shop-ink'>{value}</p>
+      <p className='mt-3 font-sans text-2xl font-extrabold text-shop-ink'>{value}</p>
       <p className='mt-2 text-sm text-shop-ink/60'>{hint}</p>
     </article>
   )
@@ -118,15 +118,15 @@ export function AdminDashboardPage() {
         <>
           <Link
             to='/admin/products'
-            className='inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-2xl border border-shop-ink/10 bg-white px-5 text-sm font-bold text-shop-ink transition hover:border-shop-teal/40 hover:text-shop-teal'
+            className='inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-2xl bg-kid-green px-5 text-sm font-bold text-white shadow-md transition hover:brightness-95'
           >
             DS sản phẩm
           </Link>
           <Link
-            to='/admin/products/new'
-            className='inline-flex min-h-11 items-center justify-center rounded-2xl bg-kid-green px-5 text-sm font-bold text-white shadow-md transition hover:brightness-95'
+            to='/admin/categories'
+            className='inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-2xl bg-kid-green px-5 text-sm font-bold text-white shadow-md transition hover:brightness-95'
           >
-            Thêm sản phẩm
+            DS danh mục
           </Link>
         </>
       }
