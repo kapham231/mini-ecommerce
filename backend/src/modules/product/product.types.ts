@@ -23,6 +23,7 @@ export const createProductSchema = z.object({
     price: z.number().positive("Price must be positive"),
     categoryId: z.string().uuid("Invalid category ID"),
     stock: z.number().int().min(0, "Stock must be positive"),
+    imageUrl: z.string().url("Invalid image URL").optional(),
 });
 
 export const updateProductSchema = z.object({
@@ -31,6 +32,7 @@ export const updateProductSchema = z.object({
     price: z.number().positive().optional(),
     categoryId: z.string().uuid().optional(),
     stock: z.number().int().min(0).optional(),
+    imageUrl: z.string().url("Invalid image URL").optional(),
     isActive: z.boolean().optional(),
 });
 
@@ -51,6 +53,7 @@ export interface ProductDTO {
     description: string | null;
     price: number;
     stock: number;
+    imageUrl: string | null;
     categoryId: string;
     isActive: boolean;
     createdAt: Date;

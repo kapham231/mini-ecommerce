@@ -69,6 +69,7 @@ export type CreateProductBody = {
   price: number
   stock: number
   categoryId: string
+  imageUrl?: string
 }
 
 export type UpdateProductBody = Partial<CreateProductBody>

@@ -24,6 +24,7 @@ import { createProductRouter } from "./modules/product/product.routes";
 import { createCategoryRouter } from "./modules/category/category.routes";
 import { createCartRouter } from "./modules/cart/cart.routes";
 import { createOrderRouter } from "./modules/order/order.routes";
+import { createUploadRouter } from "./modules/upload/upload.routes";
 
 dotenv.config();
 
@@ -63,6 +64,7 @@ export function createApp(): Express {
     app.use("/api/categories", createCategoryRouter());
     app.use("/api/cart", createCartRouter());
     app.use("/api/orders", createOrderRouter());
+    app.use("/api/uploads", createUploadRouter());
 
     // Health check endpoint
     app.get("/health", (_req, res) => {
