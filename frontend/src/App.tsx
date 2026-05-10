@@ -7,6 +7,7 @@ import { ProductDetailPage } from '~/pages/ProductDetailPage'
 import { ProductsPage } from '~/pages/ProductsPage'
 import { RegisterPage } from '~/pages/RegisterPage'
 import { CartPage } from './pages/CartPage'
+import { AboutUsPage } from './pages/AboutUsPage'
 
 function AppRoutes() {
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
@@ -21,6 +22,7 @@ function AppRoutes() {
       <Route path='/register' element={isAuthenticated ? <Navigate to='/' replace /> : <RegisterPage />} />
       <Route path='/cart' element={<CartPage />} />
       <Route path='*' element={<Navigate to='/' replace />} />
+      <Route path='/about-us' element={<AboutUsPage />} />
     </Routes>
   )
 }
