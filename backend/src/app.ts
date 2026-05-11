@@ -17,6 +17,11 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
 import { errorMiddleware } from "./shared/middleware";
+import swaggerUi from "swagger-ui-express";
+import { generateOpenAPIDocument } from "./shared/docs/openapi";
+import { registerRoutes } from "./shared/docs/register";
+import passport from "passport";
+import "./shared/config/passport"; // Load configuration
 
 // Module route creators
 import { createAuthRouter } from "./modules/auth/auth.routes";
@@ -24,6 +29,8 @@ import { createProductRouter } from "./modules/product/product.routes";
 import { createCategoryRouter } from "./modules/category/category.routes";
 import { createCartRouter } from "./modules/cart/cart.routes";
 import { createOrderRouter } from "./modules/order/order.routes";
+import { createAddressRouter } from "./modules/address/address.routes";
+import { createUserRouter } from "./modules/user/user.routes";
 
 dotenv.config();
 
@@ -40,6 +47,7 @@ export function createApp(): Express {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());
+    app.use(passport.initialize());
 
     // ============================================
     // Basic Routes
@@ -59,6 +67,8 @@ export function createApp(): Express {
     // This keeps modules decoupled and easily testable
 
     app.use("/api/auth", createAuthRouter());
+    app.use("/api/users", createUserRouter());
+    app.use("/api/addresses", createAddressRouter());
     app.use("/api/products", createProductRouter());
     app.use("/api/categories", createCategoryRouter());
     app.use("/api/cart", createCartRouter());
@@ -68,6 +78,26 @@ export function createApp(): Express {
     app.get("/health", (_req, res) => {
         res.json({ status: "healthy", timestamp: new Date().toISOString() });
     });
+
+    // ============================================
+    // Swagger API Documentation
+    // ============================================
+    if (process.env.NODE_ENV !== 'production') {
+        // Register all schemas and routes to OpenAPI registry
+        registerRoutes();
+        
+        // Generate document
+        const openAPIDocument = generateOpenAPIDocument();
+        
+        // Serve Swagger UI
+        app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openAPIDocument));
+        
+        // Expose raw JSON spec
+        app.get('/api-docs.json', (_req, res) => {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(openAPIDocument);
+        });
+    }
 
     // ============================================
     // 404 Handler

@@ -83,6 +83,9 @@ export function SiteHeader() {
           <Link to='/#site-footer' className={navLinkClass}>
             Liên hệ
           </Link>
+          <Link to='/about-us' className={navLinkClass}>
+            Về chúng tôi
+          </Link>
           {/* <Link to='/admin/products/new' className={`${navLinkClass} text-shop-tan`}>
             Form SP
           </Link> */}

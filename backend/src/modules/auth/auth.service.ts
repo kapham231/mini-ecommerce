@@ -41,12 +41,16 @@ export class AuthService {
                 name,
                 email,
                 password: hashedPassword,
+                cart: {
+                    create: {} // Auto create cart for new user
+                }
             },
             select: {
                 id: true,
                 name: true,
                 email: true,
                 role: true,
+                isActive: true,
             },
         });
 
@@ -57,7 +61,12 @@ export class AuthService {
         });
 
         return {
-            user,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            },
             token,
         };
     }
@@ -73,16 +82,30 @@ export class AuthService {
             where: { email },
         });
 
-        if (!user) {
+        if (!user || user.deletedAt) {
             throw new UnauthorizedError("Invalid credentials");
         }
 
-        // Compare passwords
+        if (!user.isActive) {
+            throw new UnauthorizedError("Account is disabled");
+        }
+
+        // Compare passwords (if exists, social users might not have password)
+        if (!user.password) {
+            throw new UnauthorizedError("This account uses social login. Please sign in with Google/Facebook.");
+        }
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
             throw new UnauthorizedError("Invalid credentials");
         }
+
+        // Update last login
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() },
+        });
 
         // Generate token
         const token = generateToken({
@@ -93,7 +116,12 @@ export class AuthService {
         const { password: _, ...userWithoutPassword } = user;
 
         return {
-            user: userWithoutPassword,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            },
             token,
         };
     }
@@ -102,19 +130,95 @@ export class AuthService {
      * Get user by ID (useful for other modules)
      */
     async getUserById(id: string) {
-        const user = await prisma.user.findUnique({
-            where: { id },
+        const user = await prisma.user.findFirst({
+            where: { id, deletedAt: null },
             select: {
                 id: true,
                 name: true,
                 email: true,
                 role: true,
+                avatar: true,
+                isActive: true,
             },
         });
 
         if (!user) {
             throw new ValidationError("User not found");
         }
+
+        return user;
+    }
+
+    /**
+     * Handle social login (Google/Facebook)
+     * Finds or creates a user based on provider information
+     */
+    async upsertSocialUser(data: {
+        email: string;
+        name: string;
+        avatar?: string;
+        provider: string;
+        providerAccountId: string;
+        access_token?: string;
+        refresh_token?: string;
+    }) {
+        const { email, name, avatar, provider, providerAccountId, access_token, refresh_token } = data;
+
+        // 1. Find user by email
+        let user = await prisma.user.findUnique({
+            where: { email },
+            include: { accounts: true }
+        });
+
+        if (user) {
+            // Check if account already exists for this provider
+            const existingAccount = user.accounts.find(
+                acc => acc.provider === provider && acc.providerAccountId === providerAccountId
+            );
+
+            if (!existingAccount) {
+                // Link new provider account to existing user
+                await prisma.account.create({
+                    data: {
+                        userId: user.id,
+                        type: "oauth",
+                        provider,
+                        providerAccountId,
+                        access_token,
+                        refresh_token
+                    }
+                });
+            }
+        } else {
+            // 2. Create new user and account
+            user = await prisma.user.create({
+                data: {
+                    email,
+                    name,
+                    avatar,
+                    isVerified: true, // Social accounts are usually pre-verified
+                    cart: {
+                        create: {}
+                    },
+                    accounts: {
+                        create: {
+                            type: "oauth",
+                            provider,
+                            providerAccountId,
+                            access_token,
+                            refresh_token
+                        }
+                    }
+                },
+                include: { accounts: true }
+            });
+        }
+
+        // Update last login
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() },
+        });
 
         return user;
     }

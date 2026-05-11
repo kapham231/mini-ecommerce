@@ -18,7 +18,7 @@ export class OrderController {
      * Get user's orders with pagination
      */
     getOrders = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(401).json({
                 success: false,
@@ -41,7 +41,7 @@ export class OrderController {
      * Get single order
      */
     getOrderById = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(401).json({
                 success: false,
@@ -63,7 +63,7 @@ export class OrderController {
      * Checkout cart and create order
      */
     checkout = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(401).json({
                 success: false,
