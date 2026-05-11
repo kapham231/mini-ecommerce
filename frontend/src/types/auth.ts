@@ -2,6 +2,7 @@ export type User = {
   id: string
   email: string
   name?: string
+  role: 'USER' | 'ADMIN'
 }
 
 export type AuthResponse = {
@@ -17,6 +18,8 @@ export function isAuthResponse(data: RegisterSuccessResponse): data is AuthRespo
     data !== null &&
     'accessToken' in data &&
     'user' in data &&
-    typeof (data as AuthResponse).accessToken === 'string'
+    typeof (data as AuthResponse).accessToken === 'string' &&
+    typeof (data as AuthResponse).user?.role === 'string' &&
+    ((data as AuthResponse).user.role === 'USER' || (data as AuthResponse).user.role === 'ADMIN')
   )
 }

@@ -1,6 +1,8 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { PopupCheckout } from '~/components/checkout/PopupCheckout'
+import { Modal } from '~/components/layout/Modal'
 import { SiteFooter } from '~/components/layout/SiteFooter'
 import { SiteHeader } from '~/components/layout/SiteHeader'
 import { decreaseQty, increaseQty, removeItem } from '~/features/cart/cartSlice'
@@ -11,7 +13,7 @@ const shippingFee = 30000
 export function CartPage() {
   const dispatch = useAppDispatch()
   const items = useAppSelector((s) => s.cart.items)
-
+  const [isPopupCheckoutOpen, setIsPopupCheckoutOpen] = useState(false)
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + Number(item.unitPrice) * item.quantity, 0),
     [items]
@@ -124,6 +126,9 @@ export function CartPage() {
                 </div>
               </div>
               <button
+                onClick={() => {
+                  if (items.length > 0) setIsPopupCheckoutOpen(true)
+                }}
                 type='button'
                 className='mt-5 w-full rounded-xl bg-kid-green px-4 py-2.5 text-sm font-bold text-white transition hover:brightness-95'
               >
@@ -135,6 +140,10 @@ export function CartPage() {
       </main>
 
       <SiteFooter />
+
+      <Modal isOpen={isPopupCheckoutOpen} onClose={() => setIsPopupCheckoutOpen(false)}>
+        <PopupCheckout onClose={() => setIsPopupCheckoutOpen(false)} />
+      </Modal>
     </div>
   )
 }
