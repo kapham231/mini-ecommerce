@@ -1,8 +1,11 @@
+import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { shopProducts } from '~/data/shopCatalog'
 import { logout } from '~/features/auth/authSlice'
 import { clearCart } from '~/features/cart/cartSlice'
 import { clearAuthStorage } from '~/lib/authStorage'
+import { formatVndFromDecimal } from '~/lib/formatPrice'
 
 const ink = '#1e293b'
 
@@ -51,12 +54,26 @@ export function SiteHeader() {
   const dispatch = useAppDispatch()
   const cartCount = useAppSelector((s) => s.cart.items.reduce((sum, item) => sum + item.quantity, 0))
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const searchResults = useMemo(() => {
+    const keyword = searchTerm.trim().toLowerCase()
+    if (!keyword) return []
+    return shopProducts.filter((p) => p.name.toLowerCase().includes(keyword) || p.slug.toLowerCase().includes(keyword)).slice(0, 6)
+  }, [searchTerm])
 
   function handleLogout() {
     clearAuthStorage()
     dispatch(logout())
     dispatch(clearCart())
     navigate('/')
+  }
+
+  function handlePickProduct(slug: string) {
+    setIsSearchOpen(false)
+    setSearchTerm('')
+    navigate(`/products/${encodeURIComponent(slug)}`)
   }
 
   return (
@@ -104,6 +121,7 @@ export function SiteHeader() {
         <div className='flex shrink-0 items-center justify-end gap-0.5 sm:gap-1.5'>
           <button
             type='button'
+            onClick={() => setIsSearchOpen(true)}
             className='inline-flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 transition hover:bg-shop-blue/55 hover:text-neutral-900 sm:h-10 sm:w-10'
             aria-label='Tìm kiếm'
           >
@@ -158,6 +176,71 @@ export function SiteHeader() {
           )}
         </div>
       </div>
+      {isSearchOpen && (
+        <div
+          className='fixed inset-0 z-[70] bg-black/30 px-4 py-16 sm:px-6'
+          onClick={() => setIsSearchOpen(false)}
+          role='presentation'
+        >
+          <div
+            className='mx-auto w-full max-w-xl rounded-2xl border border-shop-ink/10 bg-white p-4 shadow-xl sm:p-5'
+            onClick={(e) => e.stopPropagation()}
+            role='dialog'
+            aria-modal='true'
+            aria-label='Tìm kiếm sản phẩm'
+          >
+            <div className='flex items-center gap-2'>
+              <IconSearch className='h-5 w-5 text-shop-ink/60' />
+              <input
+                autoFocus
+                type='text'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder='Tìm sản phẩm theo tên...'
+                className='w-full rounded-lg border border-shop-ink/10 px-3 py-2 text-sm text-shop-ink outline-none focus:ring-2 focus:ring-kid-mint'
+              />
+              <button
+                type='button'
+                onClick={() => setIsSearchOpen(false)}
+                className='rounded-lg px-2 py-1 text-sm font-semibold text-shop-ink/60 transition hover:bg-slate-100 hover:text-shop-ink'
+              >
+                Đóng
+              </button>
+            </div>
+
+            <div className='mt-4 max-h-80 overflow-y-auto'>
+              {searchTerm.trim().length === 0 ? (
+                <p className='text-sm text-shop-ink/60'>Nhập từ khóa để tìm sản phẩm.</p>
+              ) : searchResults.length === 0 ? (
+                <p className='text-sm text-shop-ink/60'>Không tìm thấy sản phẩm phù hợp.</p>
+              ) : (
+                <ul className='space-y-2'>
+                  {searchResults.map((product) => (
+                    <li key={product.id}>
+                      <button
+                        type='button'
+                        onClick={() => handlePickProduct(product.slug)}
+                        className='flex w-full items-center gap-3 rounded-xl border border-shop-ink/10 px-3 py-2 text-left transition hover:bg-shop-blue/45'
+                      >
+                        <img
+                          src={product.imageUrl ?? '/products/image1.png'}
+                          alt=''
+                          className='h-12 w-12 rounded-lg object-cover'
+                          aria-hidden
+                        />
+                        <div className='min-w-0 flex-1'>
+                          <p className='truncate text-sm font-semibold text-shop-ink'>{product.name}</p>
+                          <p className='text-xs text-kid-green'>{formatVndFromDecimal(product.price)}</p>
+                        </div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   )
 }
