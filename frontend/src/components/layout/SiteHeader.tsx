@@ -101,7 +101,7 @@ export function SiteHeader() {
           <Link to='/' className={navLinkClass}>
             Trang chủ
           </Link>
-          <Link to='/#categories' className={navLinkClass}>
+          <Link to='/categories' className={navLinkClass}>
             Danh mục
           </Link>
           <Link to='/products' className={navLinkClass}>

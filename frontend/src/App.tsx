@@ -8,6 +8,7 @@ import { AdminProductFormPage } from '~/admin/pages/AdminProductFormPage'
 import { AdminProductsPage } from '~/admin/pages/AdminProductsPage'
 import { useAppSelector } from '~/app/hooks'
 import { BlogArticlesPage } from '~/pages/BlogArticlesPage'
+import { CategoriesPage } from '~/pages/CategoriesPage'
 import { ContactPage } from '~/pages/ContactPage'
 import { HomePage } from '~/pages/HomePage'
 import { LoginPage } from '~/pages/LoginPage'
@@ -24,6 +25,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path='/' element={<HomePage />} />
+      <Route path='/categories' element={<CategoriesPage />} />
       <Route path='/products' element={<ProductsPage />} />
       <Route path='/products/:slug' element={<ProductDetailPage />} />
       <Route path='/admin' element={<AdminDashboardPage />} />
