@@ -5,6 +5,8 @@ import { register as registerRequest } from '~/lib/api/auth'
 import { saveAuthToStorage } from '~/lib/authStorage'
 import { useAppDispatch } from '~/app/hooks'
 import { setCredentials } from '~/features/auth/authSlice'
+import { setCartItems } from '~/features/cart/cartSlice'
+import { readCartFromStorage } from '~/lib/cartStorage'
 import type { AuthResponse } from '~/types/auth'
 
 type RegisterFormValues = {
@@ -93,13 +95,17 @@ export function RegisterForm() {
     try {
       const data = await registerRequest({ email, password, name })
       const user = normalizeUser(data.user)
-      dispatch(setCredentials({ accessToken: data.accessToken, user }))
-      saveAuthToStorage(data.accessToken, user)
+      const userCartItems = readCartFromStorage(user.id)
+      dispatch(setCartItems(userCartItems))
+      dispatch(setCredentials({ token: data.token, user }))
+      saveAuthToStorage(data.token, user)
       navigate('/')
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const msg = (err.response?.data as { message?: string })?.message ?? err.message ?? 'Đăng ký thất bại'
         setError(msg)
+      } else if (err instanceof Error) {
+        setError(err.message)
       } else {
         setError('Đã xảy ra lỗi')
       }

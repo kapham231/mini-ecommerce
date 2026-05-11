@@ -12,6 +12,7 @@ import { ContactPage } from '~/pages/ContactPage'
 import { HomePage } from '~/pages/HomePage'
 import { LoginPage } from '~/pages/LoginPage'
 import { NewsPage } from '~/pages/NewsPage'
+import { ProfilePage } from '~/pages/ProfilePage'
 import { ProductDetailPage } from '~/pages/ProductDetailPage'
 import { ProductsPage } from '~/pages/ProductsPage'
 import { RegisterPage } from '~/pages/RegisterPage'
@@ -37,6 +38,7 @@ function AppRoutes() {
       <Route path='/contact' element={<ContactPage />} />
       <Route path='/login' element={isAuthenticated ? <Navigate to='/' replace /> : <LoginPage />} />
       <Route path='/register' element={isAuthenticated ? <Navigate to='/' replace /> : <RegisterPage />} />
+      <Route path='/profile' element={isAuthenticated ? <ProfilePage /> : <Navigate to='/login' replace />} />
       <Route path='/cart' element={<CartPage />} />
       <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>

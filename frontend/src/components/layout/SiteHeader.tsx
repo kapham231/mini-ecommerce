@@ -1,5 +1,8 @@
-import { Link } from 'react-router-dom'
-import { useAppSelector } from '~/app/hooks'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { logout } from '~/features/auth/authSlice'
+import { clearCart } from '~/features/cart/cartSlice'
+import { clearAuthStorage } from '~/lib/authStorage'
 
 const ink = '#1e293b'
 
@@ -44,7 +47,17 @@ const navLinkClass =
   'shrink-0 rounded-lg px-1 py-1 text-[13px] font-semibold text-neutral-800/85 transition hover:bg-shop-blue/40 hover:text-neutral-900 sm:text-sm'
 
 export function SiteHeader() {
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const cartCount = useAppSelector((s) => s.cart.items.reduce((sum, item) => sum + item.quantity, 0))
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
+
+  function handleLogout() {
+    clearAuthStorage()
+    dispatch(logout())
+    dispatch(clearCart())
+    navigate('/')
+  }
 
   return (
     <header className='sticky top-0 z-50 border-b border-shop-ink/8 bg-white font-sans antialiased shadow-sm'>
@@ -97,7 +110,7 @@ export function SiteHeader() {
             <IconSearch className='h-5 w-5' />
           </button>
           <Link
-            to='/login'
+            to={isAuthenticated ? '/profile' : '/login'}
             className='inline-flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 transition hover:bg-shop-blue/55 hover:text-neutral-900 sm:h-10 sm:w-10'
             aria-label='Tài khoản'
           >
@@ -115,19 +128,34 @@ export function SiteHeader() {
               </span>
             )}
           </Link>
-          <Link
-            to='/login'
-            className='ml-0.5 hidden min-h-9 items-center justify-center rounded-2xl bg-kid-green px-3 py-2 text-xs font-bold text-white shadow-sm ring-shop-ink/10 transition hover:brightness-95 sm:inline-flex sm:px-4 sm:text-sm'
-          >
-            Đăng nhập
-          </Link>
-          <Link
-            to='/register'
-            style={{ color: ink }}
-            className='hidden min-h-9 items-center justify-center rounded-2xl border-2 border-shop-ink/10 bg-white px-3 py-2 text-xs font-bold shadow-sm transition hover:border-shop-teal/50 hover:bg-slate-100 sm:inline-flex sm:px-3.5 sm:text-sm'
-          >
-            Đăng ký
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <button
+                type='button'
+                onClick={handleLogout}
+                className='ml-0.5 hidden min-h-9 items-center justify-center rounded-2xl border-2 border-shop-ink/10 bg-white px-3 py-2 text-xs font-bold shadow-sm transition hover:border-shop-teal/50 hover:bg-slate-100 sm:inline-flex sm:px-3.5 sm:text-sm'
+                style={{ color: ink }}
+              >
+                Đăng xuất
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to='/login'
+                className='ml-0.5 hidden min-h-9 items-center justify-center rounded-2xl bg-kid-green px-3 py-2 text-xs font-bold text-white shadow-sm ring-shop-ink/10 transition hover:brightness-95 sm:inline-flex sm:px-4 sm:text-sm'
+              >
+                Đăng nhập
+              </Link>
+              <Link
+                to='/register'
+                style={{ color: ink }}
+                className='hidden min-h-9 items-center justify-center rounded-2xl border-2 border-shop-ink/10 bg-white px-3 py-2 text-xs font-bold shadow-sm transition hover:border-shop-teal/50 hover:bg-slate-100 sm:inline-flex sm:px-3.5 sm:text-sm'
+              >
+                Đăng ký
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

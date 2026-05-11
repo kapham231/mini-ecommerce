@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import { useAppDispatch } from '~/app/hooks'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { addItem } from '~/features/cart/cartSlice'
 import { formatVndFromDecimal } from '~/lib/formatPrice'
 import type { ProductSummary } from '~/types/product'
@@ -48,6 +48,8 @@ type ProductCardProps = {
 
 export function ProductCard({ product, linkTo }: ProductCardProps) {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
   const detailPath = linkTo ?? `/products/${encodeURIComponent(product.slug)}`
   const brand = (product.brand ?? product.category.name).toUpperCase()
   const sku = product.sku ?? `SP-${product.id}`
@@ -117,7 +119,11 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
           <div className='mt-4 flex items-stretch gap-2'>
             <button
               type='button'
-              onClick={() =>
+              onClick={() => {
+                if (!isAuthenticated) {
+                  navigate('/login')
+                  return
+                }
                 dispatch(
                   addItem({
                     id: product.id,
@@ -127,7 +133,7 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
                     quantity: 1
                   })
                 )
-              }
+              }}
               className='min-h-11 flex-1 rounded-xl px-3 text-sm font-bold text-white transition hover:brightness-95 active:brightness-90'
               style={{ backgroundColor: CTA_GREEN }}
             >

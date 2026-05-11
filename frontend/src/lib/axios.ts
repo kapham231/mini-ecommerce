@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { store } from '~/app/store'
 import { logout } from '~/features/auth/authSlice'
+import { clearCart } from '~/features/cart/cartSlice'
 import { clearAuthStorage } from './authStorage'
-import { STORAGE_ACCESS_TOKEN_KEY } from './constants'
+import { STORAGE_LEGACY_ACCESS_TOKEN_KEY, STORAGE_TOKEN_KEY } from './constants'
 
 const baseURL =
   import.meta.env.VITE_API_URL !== undefined && import.meta.env.VITE_API_URL !== ''
@@ -15,7 +16,7 @@ export const axiosInstance = axios.create({
 })
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+  const token = localStorage.getItem(STORAGE_TOKEN_KEY) ?? localStorage.getItem(STORAGE_LEGACY_ACCESS_TOKEN_KEY)
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -32,6 +33,7 @@ axiosInstance.interceptors.response.use(
       }
       clearAuthStorage()
       store.dispatch(logout())
+      store.dispatch(clearCart())
       if (!window.location.pathname.startsWith('/login')) {
         window.location.assign('/login')
       }

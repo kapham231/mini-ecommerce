@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { useAppDispatch } from '~/app/hooks'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { getShopProductBySlug, shopProducts } from '~/data/shopCatalog'
 import { SiteFooter } from '~/components/layout/SiteFooter'
 import { SiteHeader } from '~/components/layout/SiteHeader'
@@ -18,6 +18,8 @@ function calcDiscount(price: string, original?: string | null): number | null {
 
 export function ProductDetailPage() {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
   const { slug } = useParams<{ slug: string }>()
   const product = useMemo(() => (slug ? getShopProductBySlug(slug) : undefined), [slug])
   const [quantity, setQuantity] = useState(1)
@@ -187,6 +189,10 @@ export function ProductDetailPage() {
                     type='button'
                     onClick={() => {
                       if (!product) return
+                      if (!isAuthenticated) {
+                        navigate('/login')
+                        return
+                      }
                       dispatch(
                         addItem({
                           id: product.id,

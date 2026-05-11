@@ -7,16 +7,20 @@ import { readCartFromStorage, saveCartToStorage } from '~/lib/cartStorage'
 
 const preloaded = readAuthFromStorage()
 
-const preloadedAuth: AuthState | undefined = preloaded
+const preloadedAuth: AuthState = preloaded
   ? {
       user: preloaded.user,
-      accessToken: preloaded.accessToken,
+      token: preloaded.token,
       isAuthenticated: true
     }
-  : undefined
+  : {
+      user: null,
+      token: null,
+      isAuthenticated: false
+    }
 
 const preloadedCart: CartState = {
-  items: readCartFromStorage()
+  items: readCartFromStorage(preloadedAuth.user?.id)
 }
 
 export const store = configureStore({
@@ -25,13 +29,17 @@ export const store = configureStore({
     cart: cartReducer
   },
   preloadedState: {
-    ...(preloadedAuth !== undefined ? { auth: preloadedAuth } : {}),
+    auth: preloadedAuth,
     cart: preloadedCart
   }
 })
 
 store.subscribe(() => {
-  saveCartToStorage(store.getState().cart.items)
+  const state = store.getState()
+  if (!state.auth.isAuthenticated || !state.auth.user?.id) {
+    return
+  }
+  saveCartToStorage(state.cart.items, state.auth.user.id)
 })
 
 export type RootState = ReturnType<typeof store.getState>
