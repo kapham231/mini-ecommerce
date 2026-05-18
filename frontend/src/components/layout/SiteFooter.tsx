@@ -49,13 +49,16 @@ export function SiteFooter() {
           src='/mascot/mascot_outline.png'
           alt=''
           aria-hidden
-          className='pointer-events-none absolute right-24 top-2 h-64 w-auto object-contain opacity-95 lg:block'
+          className='pointer-events-none absolute right-24 top-2 hidden h-64 w-auto object-contain opacity-95 lg:block'
         />
 
         <div className='grid gap-10 border-b border-white/30 pb-8 lg:grid-cols-[1fr_320px]'>
           <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-4'>
             {linkColumns.map((column) => (
-              <div key={column.title}>
+              <div
+                key={column.title}
+                className={column.title === 'Hỗ trợ' ? 'relative min-h-[11rem] pr-32 lg:min-h-0 lg:pr-0' : undefined}
+              >
                 <h3 className='text-xl font-extrabold leading-tight text-white'>{column.title}</h3>
                 <ul className='mt-3 space-y-1.5'>
                   {column.links.map((item) => (
@@ -72,6 +75,14 @@ export function SiteFooter() {
                     </li>
                   ))}
                 </ul>
+                {column.title === 'Hỗ trợ' ? (
+                  <img
+                    src='/mascot/mascot_outline.png'
+                    alt=''
+                    aria-hidden
+                    className='pointer-events-none absolute -right-2 bottom-0 h-52 w-auto object-contain opacity-95 lg:hidden'
+                  />
+                ) : null}
               </div>
             ))}
           </div>
