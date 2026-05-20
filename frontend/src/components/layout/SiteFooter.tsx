@@ -7,9 +7,7 @@ export function SiteFooter() {
       links: [
         { label: 'Câu chuyện thương hiệu', href: '#site-footer' },
         { label: 'Điều khoản sử dụng', href: '#site-footer' },
-        { label: 'Chính sách bảo mật', href: '#site-footer' },
-        { label: 'Tùy chọn quyền riêng tư', href: '#site-footer' },
-        { label: 'Cài đặt cookie', href: '#site-footer' },
+        { label: 'Chính sách bảo mật', href: '#site-footer' }
       ],
     },
     {
@@ -17,7 +15,7 @@ export function SiteFooter() {
       links: [
         { label: 'Đăng nhập', to: '/login' },
         { label: 'Đăng ký', to: '/register' },
-        { label: 'Theo dõi đơn hàng', href: '#site-footer' },
+        { label: 'Theo dõi đơn hàng', to: '/cart' },
         { label: 'Danh sách yêu thích', href: '#site-footer' },
       ],
     },
@@ -32,10 +30,10 @@ export function SiteFooter() {
     {
       title: 'Hỗ trợ',
       links: [
-        { label: 'Tư vấn chọn quà', href: '#site-footer' },
-        { label: 'Trung tâm trợ giúp', href: '#site-footer' },
-        { label: 'Vận chuyển', href: '#site-footer' },
-        { label: 'Đổi trả', href: '#site-footer' },
+        { label: 'Tư vấn chọn quà', to: '/contact' },
+        { label: 'Trung tâm trợ giúp', to: '/help-center' },
+        { label: 'Vận chuyển', to: '/shipping' },
+        { label: 'Đổi trả', to: '/returns' },
         { label: 'Liên hệ', to: '/contact' },
       ],
     },
