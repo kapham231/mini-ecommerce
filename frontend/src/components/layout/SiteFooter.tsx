@@ -40,7 +40,14 @@ export function SiteFooter() {
       ],
     },
   ]
-  const socials = ['X', 'F', 'P', 'IG', 'T', 'YT']
+  const socials = [
+    { label: 'Facebook', href: '#site-footer', icon: '/icons/icons8-facebook-100.svg' },
+    { label: 'Messenger', href: '#site-footer', icon: '/icons/icons8-facebook-messenger-100.svg' },
+    { label: 'Instagram', href: '#site-footer', icon: '/icons/icons8-instagram-100.svg' },
+    { label: 'TikTok', href: '#site-footer', icon: '/icons/icons8-tiktok-100.svg' },
+    { label: 'X', href: '#site-footer', icon: '/icons/icons8-x-100.svg' },
+    { label: 'YouTube', href: '#site-footer', icon: '/icons/icons8-youtube-100.svg' },
+  ]
 
   return (
     <footer id='site-footer' className='border-t border-white/25 bg-kid-green text-white'>
@@ -91,17 +98,17 @@ export function SiteFooter() {
         <div className='pt-7'>
           <div className='flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between'>
             <img src='/logos/logo_outline.png' alt='Kidozone' className='h-12 w-auto object-contain' />
-            <div className='flex items-center gap-3'>
-              <span className='text-3xl font-extrabold tracking-tight text-white'>@kidozone</span>
-              <div className='flex items-center gap-2.5'>
+            <div className='flex items-center gap-2 lg:gap-3'>
+              <span className='text-lg font-extrabold tracking-tight text-white lg:text-3xl'>@kidozone</span>
+              <div className='flex items-center gap-2 lg:gap-3'>
                 {socials.map((item) => (
                   <a
-                    key={item}
-                    href='#site-footer'
-                    className='inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-white/70 bg-white px-1 text-[10px] font-bold uppercase text-kid-green transition hover:brightness-95'
-                    aria-label={item}
+                    key={item.label}
+                    href={item.href}
+                    className='inline-flex h-8 w-8 items-center justify-center rounded-full bg-white transition hover:brightness-95'
+                    aria-label={item.label}
                   >
-                    {item}
+                    <img src={item.icon} alt='' className='h-5 w-5 object-contain' aria-hidden />
                   </a>
                 ))}
               </div>
