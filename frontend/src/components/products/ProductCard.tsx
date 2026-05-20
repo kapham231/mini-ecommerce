@@ -26,7 +26,7 @@ function StarRow({ rating }: { rating: number }) {
 
 function CloudDiscountBadge({ discount }: { discount: number }) {
   return (
-    <span className='absolute right-3 top-3 z-10 inline-flex h-8 w-14 items-center justify-center text-[10px] font-extrabold text-white drop-shadow-sm'>
+    <span className='absolute right-2 top-2 z-10 inline-flex h-7 w-12 items-center justify-center text-[9px] font-extrabold text-white drop-shadow-sm sm:right-3 sm:top-3 sm:h-8 sm:w-14 sm:text-[10px]'>
       <img src='/icons/discount-cloud-green.svg' alt='' aria-hidden className='absolute inset-0 h-full w-full' />
       <span className='relative'>-{discount}%</span>
     </span>
@@ -61,7 +61,7 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
   const showBestSellerBadge = brand === 'BÁN CHẠY' || brand === 'BAN CHAY' || brand === 'BEST SELLER'
 
   return (
-    <article className='flex h-full flex-col overflow-hidden rounded-2xl border border-shop-ink/10 bg-white shadow-[0_10px_20px_rgba(0,0,0,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(0,0,0,0.06)]'>
+    <article className='flex h-full flex-col overflow-hidden rounded-xl border border-shop-ink/10 bg-white shadow-[0_10px_20px_rgba(0,0,0,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(0,0,0,0.06)] sm:rounded-2xl'>
       <div className='flex flex-1 flex-col'>
         <Link
           to={detailPath}
@@ -69,7 +69,7 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
         >
           {showBestSellerBadge && (
             <span
-              className='absolute text-[#2E7D32] left-3 top-3 z-10 rounded-full bg-shop-tan px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-shop-ink shadow-sm'
+              className='absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-shop-ink shadow-sm sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px]'
               style={{ backgroundColor: '#E8F5E9' }}
             >
               Bán chạy
@@ -79,44 +79,57 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
           <img
             src={product.imageUrl ?? '/products/image1.png'}
             alt={product.name}
-            className='h-full w-full rounded-xl object-contain p-5 transition duration-300 group-hover:scale-[1.02]'
+            className='h-full w-full rounded-none object-contain p-2 transition duration-300 group-hover:scale-[1.02] sm:rounded-xl sm:p-5'
             loading='lazy'
           />
         </Link>
-        <div className='flex flex-1 flex-col px-5 pb-5 pt-3.5'>
-          <div className='flex items-start justify-between gap-2 text-[10px] text-shop-ink/45'>
-            {!showBestSellerBadge && <span className='truncate font-semibold uppercase'>{brand}</span>}
-            <span className='shrink-0 whitespace-nowrap'>Mã: {sku}</span>
+        <div className='flex flex-1 flex-col px-2 pb-2.5 pt-2 sm:px-5 sm:pb-5 sm:pt-3.5'>
+          <div className='flex items-start justify-between gap-1'>
+            <div className='flex min-w-0 flex-1 flex-col gap-0.5 text-[9px] text-shop-ink/45 sm:flex-row sm:items-start sm:gap-2 sm:text-[10px]'>
+              {!showBestSellerBadge && (
+                <span className='truncate font-semibold uppercase sm:min-w-0'>{brand}</span>
+              )}
+              <span className='truncate font-medium sm:shrink-0 sm:whitespace-nowrap'>
+                Mã: {sku}
+              </span>
+            </div>
+            <button
+              type='button'
+              aria-label='Yêu thích'
+              className='-mr-0.5 -mt-0.5 inline-flex shrink-0 items-center justify-center rounded-lg p-1 transition hover:bg-slate-50 sm:mr-0 sm:mt-0 sm:p-1.5'
+            >
+              <img src='/icons/heart-outline-green.svg' alt='' aria-hidden className='h-5 w-auto sm:h-[22px]' />
+            </button>
           </div>
 
           <Link
             to={detailPath}
-            className='mt-2.5 font-sans text-lg font-extrabold leading-snug text-shop-ink line-clamp-2 hover:text-shop-teal'
+            className='mt-1.5 line-clamp-2 font-sans text-sm font-extrabold leading-snug text-shop-ink hover:text-shop-teal sm:mt-2.5 sm:text-lg'
           >
             {product.name}
           </Link>
 
           {showRating && typeof ratingVal === 'number' && (
-            <div className='mt-1'>
+            <div className='mt-0.5 sm:mt-1'>
               <StarRow rating={ratingVal} />
             </div>
           )}
 
-          <div className='mt-1.5 flex items-end justify-start gap-2'>
-            <span className='text-lg font-extrabold' style={{ color: DETAIL_GREEN }}>
+          <div className='mt-1 flex items-end justify-start gap-2 sm:mt-1.5'>
+            <span className='text-sm font-extrabold sm:text-lg' style={{ color: DETAIL_GREEN }}>
               {formatVndFromDecimal(product.price)}
             </span>
           </div>
 
           {original && (
-            <div className='mt-1 flex items-center justify-start gap-2'>
-              <span className='text-xs text-shop-ink/55 line-through'>
+            <div className='mt-0.5 flex items-center justify-start gap-2 sm:mt-1'>
+              <span className='text-[10px] text-shop-ink/55 line-through sm:text-xs'>
                 {formatVndFromDecimal(original)}
               </span>
             </div>
           )}
 
-          <div className='mt-4 flex items-stretch gap-2'>
+          <div className='mt-auto pt-2 sm:mt-4 sm:pt-0'>
             <button
               type='button'
               onClick={() => {
@@ -134,17 +147,10 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
                   })
                 )
               }}
-              className='min-h-11 flex-1 rounded-xl px-3 text-sm font-bold text-white transition hover:brightness-95 active:brightness-90'
+              className='flex min-h-9 w-full items-center justify-center rounded-lg px-1.5 text-[11px] font-bold leading-tight text-white transition hover:brightness-95 active:brightness-90 sm:min-h-11 sm:rounded-xl sm:px-3 sm:text-sm'
               style={{ backgroundColor: CTA_GREEN }}
             >
-              Thêm vào giỏ hàng
-            </button>
-            <button
-              type='button'
-              aria-label='Yêu thích'
-              className='flex w-11 shrink-0 items-center justify-end rounded-xl transition hover:bg-slate-50'
-            >
-              <img src='/icons/heart-outline-green.svg' alt='' aria-hidden className='h-[30px] w-auto' />
+            Thêm vào giỏ hàng
             </button>
           </div>
         </div>
