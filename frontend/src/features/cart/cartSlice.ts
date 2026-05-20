@@ -24,6 +24,11 @@ type AddItemPayload = {
   quantity?: number
 }
 
+type SetQtyPayload = {
+  id: number
+  quantity: number
+}
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
@@ -58,11 +63,16 @@ const cartSlice = createSlice({
       if (!item) return
       item.quantity = Math.max(1, item.quantity - 1)
     },
+    setQty: (state, action: PayloadAction<SetQtyPayload>) => {
+      const item = state.items.find((it) => it.id === action.payload.id)
+      if (!item) return
+      item.quantity = Math.max(1, action.payload.quantity)
+    },
     clearCart: (state) => {
       state.items = []
     }
   }
 })
 
-export const { setCartItems, addItem, removeItem, increaseQty, decreaseQty, clearCart } = cartSlice.actions
+export const { setCartItems, addItem, removeItem, increaseQty, decreaseQty, setQty, clearCart } = cartSlice.actions
 export default cartSlice.reducer
