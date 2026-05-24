@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { ScrollToTop } from '~/components/layout/ScrollToTop'
 import { AdminCategoryEditPage } from '~/admin/pages/AdminCategoryEditPage'
 import { AdminCategoryFormPage } from '~/admin/pages/AdminCategoryFormPage'
 import { AdminCategoriesPage } from '~/admin/pages/AdminCategoriesPage'
@@ -18,6 +19,7 @@ import { ProductDetailPage } from '~/pages/ProductDetailPage'
 import { ProductsPage } from '~/pages/ProductsPage'
 import { RegisterPage } from '~/pages/RegisterPage'
 import { CartPage } from './pages/CartPage'
+import { WishlistPage } from './pages/WishlistPage'
 
 function AppRoutes() {
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
@@ -42,11 +44,20 @@ function AppRoutes() {
       <Route path='/register' element={isAuthenticated ? <Navigate to='/' replace /> : <RegisterPage />} />
       <Route path='/profile' element={isAuthenticated ? <ProfilePage /> : <Navigate to='/login' replace />} />
       <Route path='/cart' element={<CartPage />} />
+      <Route
+        path='/wishlist'
+        element={isAuthenticated ? <WishlistPage /> : <Navigate to='/login' replace />}
+      />
       <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>
   )
 }
 
 export default function App() {
-  return <AppRoutes />
+  return (
+    <>
+      <ScrollToTop />
+      <AppRoutes />
+    </>
+  )
 }

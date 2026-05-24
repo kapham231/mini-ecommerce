@@ -16,7 +16,7 @@ export function SiteFooter() {
         { label: 'Đăng nhập', to: '/login' },
         { label: 'Đăng ký', to: '/register' },
         { label: 'Theo dõi đơn hàng', to: '/cart' },
-        { label: 'Danh sách yêu thích', href: '#site-footer' },
+        { label: 'Danh sách yêu thích', to: '/wishlist' },
       ],
     },
     {

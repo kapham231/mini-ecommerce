@@ -80,11 +80,7 @@ export function HomePage() {
             />
             <div className='mt-10 grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4'>
               {catalogProducts.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={catalogProductToProductSummary(p)}
-                  linkTo='/products'
-                />
+                <ProductCard key={p.id} product={catalogProductToProductSummary(p)} />
               ))}
             </div>
             <div className='mt-10 flex justify-center'>

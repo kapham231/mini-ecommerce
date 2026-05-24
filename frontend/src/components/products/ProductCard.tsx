@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { addItem } from '~/features/cart/cartSlice'
+import { toggleWishlistItem } from '~/features/wishlist/wishlistSlice'
 import { formatVndFromDecimal } from '~/lib/formatPrice'
 import type { ProductSummary } from '~/types/product'
 
@@ -33,6 +34,25 @@ function CloudDiscountBadge({ discount }: { discount: number }) {
   )
 }
 
+function HeartIcon({ filled, className }: { filled?: boolean; className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox='0 0 24 24'
+      fill={filled ? 'currentColor' : 'none'}
+      aria-hidden
+    >
+      <path
+        d='M21 8.25c0-2.485-2.015-4.5-4.5-4.5-1.64 0-3.065.873-3.84 2.165L12 6.09l-.66-1.125A4.488 4.488 0 0 0 7.5 3.75C5.015 3.75 3 5.765 3 8.25c0 5.942 9 11.25 9 11.25s9-5.308 9-11.25Z'
+        stroke='currentColor'
+        strokeWidth='1.75'
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+    </svg>
+  )
+}
+
 function inferDiscountPercent(price: string, original: string | null | undefined): number | null {
   if (!original) return null
   const p = Number(price)
@@ -50,6 +70,7 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
+  const isWishlisted = useAppSelector((s) => s.wishlist.productIds.includes(product.id))
   const detailPath = linkTo ?? `/products/${encodeURIComponent(product.slug)}`
   const brand = (product.brand ?? product.category.name).toUpperCase()
   const sku = product.sku ?? `SP-${product.id}`
@@ -95,10 +116,20 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
             </div>
             <button
               type='button'
-              aria-label='Yêu thích'
-              className='-mr-0.5 -mt-0.5 inline-flex shrink-0 items-center justify-center rounded-lg p-1 transition hover:bg-slate-50 sm:mr-0 sm:mt-0 sm:p-1.5'
+              onClick={() => {
+                if (!isAuthenticated) {
+                  navigate('/login')
+                  return
+                }
+                dispatch(toggleWishlistItem(product.id))
+              }}
+              aria-label={isWishlisted ? 'Bỏ khỏi yêu thích' : 'Thêm vào yêu thích'}
+              aria-pressed={isWishlisted}
+              className={`-mr-0.5 -mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-kid-green transition hover:bg-slate-50 sm:mr-0 sm:mt-0 sm:h-8 sm:w-8 ${
+                isWishlisted ? 'bg-kid-green/10' : ''
+              }`}
             >
-              <img src='/icons/heart-outline-green.svg' alt='' aria-hidden className='h-5 w-auto sm:h-[22px]' />
+              <HeartIcon filled={isWishlisted} className='h-5 w-5 sm:h-[22px] sm:w-[22px]' />
             </button>
           </div>
 

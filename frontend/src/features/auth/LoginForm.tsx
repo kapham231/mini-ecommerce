@@ -6,7 +6,9 @@ import { saveAuthToStorage } from '~/lib/authStorage'
 import { useAppDispatch } from '~/app/hooks'
 import { setCredentials } from '~/features/auth/authSlice'
 import { setCartItems } from '~/features/cart/cartSlice'
+import { setWishlistIds } from '~/features/wishlist/wishlistSlice'
 import { readCartFromStorage } from '~/lib/cartStorage'
+import { readWishlistFromStorage } from '~/lib/wishlistStorage'
 import type { AuthResponse } from '~/types/auth'
 
 function normalizeUser(user: AuthResponse['user']) {
@@ -32,7 +34,9 @@ export function LoginForm() {
       const data = await loginRequest({ email, password })
       const user = normalizeUser(data.user)
       const userCartItems = readCartFromStorage(user.id)
+      const userWishlistIds = readWishlistFromStorage(user.id)
       dispatch(setCartItems(userCartItems))
+      dispatch(setWishlistIds(userWishlistIds))
       dispatch(setCredentials({ token: data.token, user }))
       saveAuthToStorage(data.token, user)
       navigate('/')

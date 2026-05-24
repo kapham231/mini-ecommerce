@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { shopProducts } from '~/data/shopCatalog'
 import { logout } from '~/features/auth/authSlice'
 import { clearCart } from '~/features/cart/cartSlice'
+import { clearWishlist } from '~/features/wishlist/wishlistSlice'
 import { clearAuthStorage } from '~/lib/authStorage'
 import { formatVndFromDecimal } from '~/lib/formatPrice'
 
@@ -75,6 +76,7 @@ export function SiteHeader() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const cartCount = useAppSelector((s) => s.cart.items.reduce((sum, item) => sum + item.quantity, 0))
+  const wishlistCount = useAppSelector((s) => s.wishlist.productIds.length)
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -90,6 +92,7 @@ export function SiteHeader() {
     clearAuthStorage()
     dispatch(logout())
     dispatch(clearCart())
+    dispatch(clearWishlist())
     navigate('/')
   }
 
@@ -145,13 +148,18 @@ export function SiteHeader() {
             >
               <IconSearch className='h-5 w-5' />
             </button>
-            <button
-              type='button'
-              className='inline-flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-shop-blue'
-              aria-label='Yêu thích'
+            <Link
+              to={isAuthenticated ? '/wishlist' : '/login'}
+              className='relative inline-flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-shop-blue'
+              aria-label='Danh sách yêu thích'
             >
               <IconHeart className='h-5 w-5' />
-            </button>
+              {isAuthenticated && wishlistCount > 0 && (
+                <span className='absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-kid-green px-1 text-[11px] font-bold leading-none text-white'>
+                  {wishlistCount > 99 ? '99+' : wishlistCount}
+                </span>
+              )}
+            </Link>
             <Link
               to='/cart'
               className='relative inline-flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-shop-blue'

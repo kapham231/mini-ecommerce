@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
-import { getShopProductBySlug, shopProducts } from '~/data/shopCatalog'
+import { getAllProducts, getProductBySlug } from '~/lib/productLookup'
 import { SiteFooter } from '~/components/layout/SiteFooter'
 import { SiteHeader } from '~/components/layout/SiteHeader'
 import { addItem } from '~/features/cart/cartSlice'
@@ -21,7 +21,7 @@ export function ProductDetailPage() {
   const navigate = useNavigate()
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
   const { slug } = useParams<{ slug: string }>()
-  const product = useMemo(() => (slug ? getShopProductBySlug(slug) : undefined), [slug])
+  const product = useMemo(() => (slug ? getProductBySlug(slug) : undefined), [slug])
   const [quantity, setQuantity] = useState(1)
   const [activeImage, setActiveImage] = useState(0)
 
@@ -39,7 +39,9 @@ export function ProductDetailPage() {
 
   const relatedProducts = useMemo(() => {
     if (!product) return []
-    return shopProducts.filter((p) => p.categoryId === product.categoryId && p.id !== product.id).slice(0, 4)
+    return getAllProducts()
+      .filter((p) => p.categoryId === product.categoryId && p.id !== product.id)
+      .slice(0, 4)
   }, [product])
 
   const discount = product?.discountPercent ?? calcDiscount(product?.price ?? '', product?.originalPrice)
