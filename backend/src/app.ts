@@ -79,6 +79,7 @@ export function createApp(): Express {
             success: false,
             message: "Route not found",
             statusCode: 404,
+            timestamp: new Date().toISOString(),
         });
     });
 

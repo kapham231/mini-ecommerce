@@ -20,6 +20,7 @@ import { ProductsPage } from '~/pages/ProductsPage'
 import { RegisterPage } from '~/pages/RegisterPage'
 import { CartPage } from './pages/CartPage'
 import { WishlistPage } from './pages/WishlistPage'
+import { ErrorPage } from './pages/ErrorPage'
 
 function AppRoutes() {
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
@@ -48,7 +49,8 @@ function AppRoutes() {
         path='/wishlist'
         element={isAuthenticated ? <WishlistPage /> : <Navigate to='/login' replace />}
       />
-      <Route path='*' element={<Navigate to='/' replace />} />
+      <Route path='/error' element={<ErrorPage />} />
+      <Route path='*' element={<ErrorPage defaultStatusCode={404} />} />
     </Routes>
   )
 }

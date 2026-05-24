@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
 import { getAllProducts, getProductBySlug } from '~/lib/productLookup'
 import { SiteFooter } from '~/components/layout/SiteFooter'
@@ -46,6 +46,16 @@ export function ProductDetailPage() {
 
   const discount = product?.discountPercent ?? calcDiscount(product?.price ?? '', product?.originalPrice)
 
+  if (slug && !product) {
+    return (
+      <Navigate
+        to='/error'
+        replace
+        state={{ statusCode: 404, message: 'Không tìm thấy sản phẩm.' }}
+      />
+    )
+  }
+
   return (
     <div className='min-h-screen bg-shop-blue font-sans'>
       <SiteHeader />
@@ -65,12 +75,6 @@ export function ProductDetailPage() {
         {!slug && (
           <p className='mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800' role='alert'>
             Thiếu mã sản phẩm trong URL.
-          </p>
-        )}
-
-        {slug && !product && (
-          <p className='mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900' role='alert'>
-            Không có sản phẩm mẫu cho slug này.
           </p>
         )}
 
