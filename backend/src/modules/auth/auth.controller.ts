@@ -30,7 +30,10 @@ export class AuthController {
 
         res.status(201).json({
             success: true,
-            data: result.user,
+            data: {
+                user: result.user,
+                token: result.token,
+            },
         });
     });
 
@@ -51,7 +54,10 @@ export class AuthController {
 
         res.status(200).json({
             success: true,
-            data: result.user,
+            data: {
+                user: result.user,
+                token: result.token,
+            },
         });
     });
 

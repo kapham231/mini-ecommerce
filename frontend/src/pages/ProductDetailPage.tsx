@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { useAppDispatch } from '~/app/hooks'
-import { getShopProductBySlug, shopProducts } from '~/data/shopCatalog'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { getAllProducts, getProductBySlug } from '~/lib/productLookup'
 import { SiteFooter } from '~/components/layout/SiteFooter'
 import { SiteHeader } from '~/components/layout/SiteHeader'
 import { addItem } from '~/features/cart/cartSlice'
@@ -18,8 +18,10 @@ function calcDiscount(price: string, original?: string | null): number | null {
 
 export function ProductDetailPage() {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
   const { slug } = useParams<{ slug: string }>()
-  const product = useMemo(() => (slug ? getShopProductBySlug(slug) : undefined), [slug])
+  const product = useMemo(() => (slug ? getProductBySlug(slug) : undefined), [slug])
   const [quantity, setQuantity] = useState(1)
   const [activeImage, setActiveImage] = useState(0)
 
@@ -37,10 +39,22 @@ export function ProductDetailPage() {
 
   const relatedProducts = useMemo(() => {
     if (!product) return []
-    return shopProducts.filter((p) => p.categoryId === product.categoryId && p.id !== product.id).slice(0, 4)
+    return getAllProducts()
+      .filter((p) => p.categoryId === product.categoryId && p.id !== product.id)
+      .slice(0, 4)
   }, [product])
 
   const discount = product?.discountPercent ?? calcDiscount(product?.price ?? '', product?.originalPrice)
+
+  if (slug && !product) {
+    return (
+      <Navigate
+        to='/error'
+        replace
+        state={{ statusCode: 404, message: 'Không tìm thấy sản phẩm.' }}
+      />
+    )
+  }
 
   return (
     <div className='min-h-screen bg-shop-blue font-sans'>
@@ -61,12 +75,6 @@ export function ProductDetailPage() {
         {!slug && (
           <p className='mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800' role='alert'>
             Thiếu mã sản phẩm trong URL.
-          </p>
-        )}
-
-        {slug && !product && (
-          <p className='mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900' role='alert'>
-            Không có sản phẩm mẫu cho slug này.
           </p>
         )}
 
@@ -187,6 +195,10 @@ export function ProductDetailPage() {
                     type='button'
                     onClick={() => {
                       if (!product) return
+                      if (!isAuthenticated) {
+                        navigate('/login')
+                        return
+                      }
                       dispatch(
                         addItem({
                           id: product.id,
@@ -221,7 +233,7 @@ export function ProductDetailPage() {
                     Xem tất cả
                   </Link>
                 </div>
-                <div className='grid gap-5 sm:grid-cols-2 lg:grid-cols-4'>
+                <div className='grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4'>
                   {relatedProducts.map((item) => (
                     <ProductCard key={item.id} product={item} />
                   ))}

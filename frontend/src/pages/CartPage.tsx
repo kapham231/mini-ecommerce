@@ -1,9 +1,11 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { PopupCheckout } from '~/components/checkout/PopupCheckout'
+import { Modal } from '~/components/layout/Modal'
 import { SiteFooter } from '~/components/layout/SiteFooter'
 import { SiteHeader } from '~/components/layout/SiteHeader'
-import { decreaseQty, increaseQty, removeItem } from '~/features/cart/cartSlice'
+import { decreaseQty, increaseQty, removeItem, setQty } from '~/features/cart/cartSlice'
 import { formatVndFromDecimal } from '~/lib/formatPrice'
 
 const shippingFee = 30000
@@ -11,7 +13,7 @@ const shippingFee = 30000
 export function CartPage() {
   const dispatch = useAppDispatch()
   const items = useAppSelector((s) => s.cart.items)
-
+  const [isPopupCheckoutOpen, setIsPopupCheckoutOpen] = useState(false)
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + Number(item.unitPrice) * item.quantity, 0),
     [items]
@@ -81,18 +83,27 @@ export function CartPage() {
                           <button
                             type='button'
                             onClick={() => dispatch(decreaseQty(item.id))}
-                            className='px-3 py-1.5 text-lg text-shop-ink transition hover:bg-shop-blue'
+                            className='px-1.5 py-1.5 text-lg text-shop-ink transition hover:bg-shop-blue'
                             aria-label='Giảm số lượng'
                           >
                             -
                           </button>
-                          <span className='min-w-10 text-center text-sm font-semibold text-shop-ink'>
-                            {item.quantity}
-                          </span>
+                          <input
+                            type='number'
+                            min={1}
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const nextQty = Number(e.target.value)
+                              if (!Number.isFinite(nextQty) || nextQty < 1) return
+                              dispatch(setQty({ id: item.id, quantity: nextQty }))
+                            }}
+                            className='w-10 border-x border-shop-ink/15 bg-white text-center text-sm font-semibold text-shop-ink outline-none'
+                            aria-label={`Số lượng của ${item.name}`}
+                          />
                           <button
                             type='button'
                             onClick={() => dispatch(increaseQty(item.id))}
-                            className='px-3 py-1.5 text-lg text-shop-ink transition hover:bg-shop-blue'
+                            className='px-1.5 py-1.5 text-lg text-shop-ink transition hover:bg-shop-blue'
                             aria-label='Tăng số lượng'
                           >
                             +
@@ -124,6 +135,9 @@ export function CartPage() {
                 </div>
               </div>
               <button
+                onClick={() => {
+                  if (items.length > 0) setIsPopupCheckoutOpen(true)
+                }}
                 type='button'
                 className='mt-5 w-full rounded-xl bg-kid-green px-4 py-2.5 text-sm font-bold text-white transition hover:brightness-95'
               >
@@ -135,6 +149,10 @@ export function CartPage() {
       </main>
 
       <SiteFooter />
+
+      <Modal isOpen={isPopupCheckoutOpen} onClose={() => setIsPopupCheckoutOpen(false)}>
+        <PopupCheckout onClose={() => setIsPopupCheckoutOpen(false)} />
+      </Modal>
     </div>
   )
 }

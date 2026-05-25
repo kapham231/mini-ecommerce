@@ -4,13 +4,13 @@ import type { User } from '~/types/auth'
 
 export type AuthState = {
   user: User | null
-  accessToken: string | null
+  token: string | null
   isAuthenticated: boolean
 }
 
 const initialState: AuthState = {
   user: null,
-  accessToken: null,
+  token: null,
   isAuthenticated: false
 }
 
@@ -18,14 +18,14 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (state, action: PayloadAction<{ accessToken: string; user: User }>) => {
-      state.accessToken = action.payload.accessToken
+    setCredentials: (state, action: PayloadAction<{ token: string; user: User }>) => {
+      state.token = action.payload.token
       state.user = action.payload.user
       state.isAuthenticated = true
     },
     logout: (state) => {
       state.user = null
-      state.accessToken = null
+      state.token = null
       state.isAuthenticated = false
     }
   }

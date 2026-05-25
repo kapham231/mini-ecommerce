@@ -1,5 +1,12 @@
-import { Link } from 'react-router-dom'
-import { useAppSelector } from '~/app/hooks'
+import { useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '~/app/hooks'
+import { shopProducts } from '~/data/shopCatalog'
+import { logout } from '~/features/auth/authSlice'
+import { clearCart } from '~/features/cart/cartSlice'
+import { clearWishlist } from '~/features/wishlist/wishlistSlice'
+import { clearAuthStorage } from '~/lib/authStorage'
+import { formatVndFromDecimal } from '~/lib/formatPrice'
 
 const ink = '#1e293b'
 
@@ -40,11 +47,60 @@ function IconCart({ className }: { className?: string }) {
   )
 }
 
+function IconMenu({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox='0 0 24 24' fill='none' aria-hidden>
+      <path d='M4 7h16M4 12h16M4 17h16' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+  )
+}
+
+function IconHeart({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox='0 0 24 24' fill='none' aria-hidden>
+      <path
+        d='M12 20s-6.5-4.35-8.5-7.42A4.95 4.95 0 0 1 7.7 5C9.42 5 10.9 5.87 12 7.2 13.1 5.87 14.58 5 16.3 5a4.95 4.95 0 0 1 4.2 7.58C18.5 15.65 12 20 12 20Z'
+        stroke='currentColor'
+        strokeWidth='2'
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+    </svg>
+  )
+}
+
 const navLinkClass =
   'shrink-0 rounded-lg px-1 py-1 text-[13px] font-semibold text-neutral-800/85 transition hover:bg-shop-blue/40 hover:text-neutral-900 sm:text-sm'
 
 export function SiteHeader() {
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const cartCount = useAppSelector((s) => s.cart.items.reduce((sum, item) => sum + item.quantity, 0))
+  const wishlistCount = useAppSelector((s) => s.wishlist.productIds.length)
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const searchResults = useMemo(() => {
+    const keyword = searchTerm.trim().toLowerCase()
+    if (!keyword) return []
+    return shopProducts.filter((p) => p.name.toLowerCase().includes(keyword) || p.slug.toLowerCase().includes(keyword)).slice(0, 6)
+  }, [searchTerm])
+
+  function handleLogout() {
+    clearAuthStorage()
+    dispatch(logout())
+    dispatch(clearCart())
+    dispatch(clearWishlist())
+    navigate('/')
+  }
+
+  function handlePickProduct(slug: string) {
+    setIsSearchOpen(false)
+    setSearchTerm('')
+    navigate(`/products/${encodeURIComponent(slug)}`)
+  }
 
   return (
     <header className='sticky top-0 z-50 border-b border-shop-ink/8 bg-white font-sans antialiased shadow-sm'>
@@ -55,7 +111,105 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className='mx-auto grid max-w-6xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 py-3 sm:gap-4 sm:px-6 sm:py-3.5'>
+      <div className='sm:hidden border-b border-shop-ink/10 bg-white text-shop-ink'>
+        <div className='grid grid-cols-[auto_1fr_auto] items-center gap-1 px-3 py-2'>
+          <div className='flex items-center gap-1'>
+            <button
+              type='button'
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              className='inline-flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-shop-blue'
+              aria-label='Mở menu'
+              aria-expanded={isMobileMenuOpen}
+            >
+              <IconMenu className='h-5 w-5' />
+            </button>
+            <Link
+              to={isAuthenticated ? '/profile' : '/login'}
+              className='inline-flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-shop-blue'
+              aria-label='Tài khoản'
+            >
+              <IconUser className='h-5 w-5' />
+            </Link>
+          </div>
+
+          <Link
+            to='/'
+            className='flex items-center justify-center rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-shop-teal/50'
+          >
+            <img src='/logos/logo.png' alt='Kidozone' className='h-8 w-auto object-contain' />
+          </Link>
+
+          <div className='flex items-center justify-end gap-1'>
+            <button
+              type='button'
+              onClick={() => setIsSearchOpen(true)}
+              className='inline-flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-shop-blue'
+              aria-label='Tìm kiếm'
+            >
+              <IconSearch className='h-5 w-5' />
+            </button>
+            <Link
+              to={isAuthenticated ? '/wishlist' : '/login'}
+              className='relative inline-flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-shop-blue'
+              aria-label='Danh sách yêu thích'
+            >
+              <IconHeart className='h-5 w-5' />
+              {isAuthenticated && wishlistCount > 0 && (
+                <span className='absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-kid-green px-1 text-[11px] font-bold leading-none text-white'>
+                  {wishlistCount > 99 ? '99+' : wishlistCount}
+                </span>
+              )}
+            </Link>
+            <Link
+              to='/cart'
+              className='relative inline-flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-shop-blue'
+              aria-label='Giỏ hàng'
+            >
+              <IconCart className='h-5 w-5' />
+              {cartCount > 0 && (
+                <span className='absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-kid-green px-1 text-[11px] font-bold leading-none text-white'>
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+          </div>
+        </div>
+
+        {isMobileMenuOpen && (
+          <nav className='border-t border-shop-ink/10 bg-white px-4 py-3 text-shop-ink' aria-label='Điều hướng chính di động'>
+            <div className='grid grid-cols-2 gap-2 text-sm font-semibold'>
+              <Link to='/' className='rounded-lg px-2 py-2 hover:bg-shop-blue' onClick={() => setIsMobileMenuOpen(false)}>
+                Trang chủ
+              </Link>
+              <Link
+                to='/categories'
+                className='rounded-lg px-2 py-2 hover:bg-shop-blue'
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Danh mục
+              </Link>
+              <Link to='/products' className='rounded-lg px-2 py-2 hover:bg-shop-blue' onClick={() => setIsMobileMenuOpen(false)}>
+                Sản phẩm
+              </Link>
+              <Link to='/news' className='rounded-lg px-2 py-2 hover:bg-shop-blue' onClick={() => setIsMobileMenuOpen(false)}>
+                Tin tức
+              </Link>
+              <Link
+                to='/blog/articles'
+                className='rounded-lg px-2 py-2 hover:bg-shop-blue'
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Bài viết
+              </Link>
+              <Link to='/contact' className='rounded-lg px-2 py-2 hover:bg-shop-blue' onClick={() => setIsMobileMenuOpen(false)}>
+                Liên hệ
+              </Link>
+            </div>
+          </nav>
+        )}
+      </div>
+
+      <div className='mx-auto hidden max-w-6xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 py-3 sm:grid sm:gap-4 sm:px-6 sm:py-3.5'>
         <Link
           to='/'
           className='group flex shrink-0 items-center gap-2 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-shop-teal/50 sm:gap-2.5'
@@ -71,36 +225,37 @@ export function SiteHeader() {
           <Link to='/' className={navLinkClass}>
             Trang chủ
           </Link>
-          <Link to='/#categories' className={navLinkClass}>
+          <Link to='/categories' className={navLinkClass}>
             Danh mục
           </Link>
           <Link to='/products' className={navLinkClass}>
             Sản phẩm
           </Link>
-          <Link to='/#news' className={navLinkClass}>
+          <Link to='/news' className={navLinkClass}>
             Tin tức
           </Link>
-          <Link to='/#site-footer' className={navLinkClass}>
+          <Link to='/blog/articles' className={navLinkClass}>
+            Bài viết
+          </Link>
+          <Link to='/contact' className={navLinkClass}>
             Liên hệ
           </Link>
           <Link to='/about-us' className={navLinkClass}>
             Về chúng tôi
           </Link>
-          {/* <Link to='/admin/products/new' className={`${navLinkClass} text-shop-tan`}>
-            Form SP
-          </Link> */}
         </nav>
 
         <div className='flex shrink-0 items-center justify-end gap-0.5 sm:gap-1.5'>
           <button
             type='button'
+            onClick={() => setIsSearchOpen(true)}
             className='inline-flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 transition hover:bg-shop-blue/55 hover:text-neutral-900 sm:h-10 sm:w-10'
             aria-label='Tìm kiếm'
           >
             <IconSearch className='h-5 w-5' />
           </button>
           <Link
-            to='/login'
+            to={isAuthenticated ? '/profile' : '/login'}
             className='inline-flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 transition hover:bg-shop-blue/55 hover:text-neutral-900 sm:h-10 sm:w-10'
             aria-label='Tài khoản'
           >
@@ -118,21 +273,101 @@ export function SiteHeader() {
               </span>
             )}
           </Link>
-          <Link
-            to='/login'
-            className='ml-0.5 hidden min-h-9 items-center justify-center rounded-2xl bg-kid-green px-3 py-2 text-xs font-bold text-white shadow-sm ring-shop-ink/10 transition hover:brightness-95 sm:inline-flex sm:px-4 sm:text-sm'
-          >
-            Đăng nhập
-          </Link>
-          <Link
-            to='/register'
-            style={{ color: ink }}
-            className='hidden min-h-9 items-center justify-center rounded-2xl border-2 border-shop-ink/10 bg-white px-3 py-2 text-xs font-bold shadow-sm transition hover:border-shop-teal/50 hover:bg-slate-100 sm:inline-flex sm:px-3.5 sm:text-sm'
-          >
-            Đăng ký
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <button
+                type='button'
+                onClick={handleLogout}
+                className='ml-0.5 hidden min-h-9 items-center justify-center rounded-2xl border-2 border-shop-ink/10 bg-white px-3 py-2 text-xs font-bold shadow-sm transition hover:border-shop-teal/50 hover:bg-slate-100 sm:inline-flex sm:px-3.5 sm:text-sm'
+                style={{ color: ink }}
+              >
+                Đăng xuất
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to='/login'
+                className='ml-0.5 hidden min-h-9 items-center justify-center rounded-2xl bg-kid-green px-3 py-2 text-xs font-bold text-white shadow-sm ring-shop-ink/10 transition hover:brightness-95 sm:inline-flex sm:px-4 sm:text-sm'
+              >
+                Đăng nhập
+              </Link>
+              <Link
+                to='/register'
+                style={{ color: ink }}
+                className='hidden min-h-9 items-center justify-center rounded-2xl border-2 border-shop-ink/10 bg-white px-3 py-2 text-xs font-bold shadow-sm transition hover:border-shop-teal/50 hover:bg-slate-100 sm:inline-flex sm:px-3.5 sm:text-sm'
+              >
+                Đăng ký
+              </Link>
+            </>
+          )}
         </div>
       </div>
+      {isSearchOpen && (
+        <div
+          className='fixed inset-0 z-[70] bg-black/30 px-4 py-16 sm:px-6'
+          onClick={() => setIsSearchOpen(false)}
+          role='presentation'
+        >
+          <div
+            className='mx-auto w-full max-w-xl rounded-2xl border border-shop-ink/10 bg-white p-4 shadow-xl sm:p-5'
+            onClick={(e) => e.stopPropagation()}
+            role='dialog'
+            aria-modal='true'
+            aria-label='Tìm kiếm sản phẩm'
+          >
+            <div className='flex items-center gap-2'>
+              <IconSearch className='h-5 w-5 text-shop-ink/60' />
+              <input
+                autoFocus
+                type='text'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder='Tìm sản phẩm theo tên...'
+                className='w-full rounded-lg border border-shop-ink/10 px-3 py-2 text-sm text-shop-ink outline-none focus:ring-2 focus:ring-kid-mint'
+              />
+              <button
+                type='button'
+                onClick={() => setIsSearchOpen(false)}
+                className='rounded-lg px-2 py-1 text-sm font-semibold text-shop-ink/60 transition hover:bg-slate-100 hover:text-shop-ink'
+              >
+                Đóng
+              </button>
+            </div>
+
+            <div className='mt-4 max-h-80 overflow-y-auto'>
+              {searchTerm.trim().length === 0 ? (
+                <p className='text-sm text-shop-ink/60'>Nhập từ khóa để tìm sản phẩm.</p>
+              ) : searchResults.length === 0 ? (
+                <p className='text-sm text-shop-ink/60'>Không tìm thấy sản phẩm phù hợp.</p>
+              ) : (
+                <ul className='space-y-2'>
+                  {searchResults.map((product) => (
+                    <li key={product.id}>
+                      <button
+                        type='button'
+                        onClick={() => handlePickProduct(product.slug)}
+                        className='flex w-full items-center gap-3 rounded-xl border border-shop-ink/10 px-3 py-2 text-left transition hover:bg-shop-blue/45'
+                      >
+                        <img
+                          src={product.imageUrl ?? '/products/image1.png'}
+                          alt=''
+                          className='h-12 w-12 rounded-lg object-cover'
+                          aria-hidden
+                        />
+                        <div className='min-w-0 flex-1'>
+                          <p className='truncate text-sm font-semibold text-shop-ink'>{product.name}</p>
+                          <p className='text-xs text-kid-green'>{formatVndFromDecimal(product.price)}</p>
+                        </div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

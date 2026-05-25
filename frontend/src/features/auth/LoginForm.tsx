@@ -5,6 +5,10 @@ import { login as loginRequest } from '~/lib/api/auth'
 import { saveAuthToStorage } from '~/lib/authStorage'
 import { useAppDispatch } from '~/app/hooks'
 import { setCredentials } from '~/features/auth/authSlice'
+import { setCartItems } from '~/features/cart/cartSlice'
+import { setWishlistIds } from '~/features/wishlist/wishlistSlice'
+import { readCartFromStorage } from '~/lib/cartStorage'
+import { readWishlistFromStorage } from '~/lib/wishlistStorage'
 import type { AuthResponse } from '~/types/auth'
 
 function normalizeUser(user: AuthResponse['user']) {
@@ -29,13 +33,19 @@ export function LoginForm() {
     try {
       const data = await loginRequest({ email, password })
       const user = normalizeUser(data.user)
-      dispatch(setCredentials({ accessToken: data.accessToken, user }))
-      saveAuthToStorage(data.accessToken, user)
+      const userCartItems = readCartFromStorage(user.id)
+      const userWishlistIds = readWishlistFromStorage(user.id)
+      dispatch(setCartItems(userCartItems))
+      dispatch(setWishlistIds(userWishlistIds))
+      dispatch(setCredentials({ token: data.token, user }))
+      saveAuthToStorage(data.token, user)
       navigate('/')
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const msg = (err.response?.data as { message?: string })?.message ?? err.message ?? 'Đăng nhập thất bại'
         setError(msg)
+      } else if (err instanceof Error) {
+        setError(err.message)
       } else {
         setError('Đã xảy ra lỗi')
       }

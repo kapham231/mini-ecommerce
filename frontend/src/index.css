@@ -13,4 +13,5 @@ body {
   font-family: 'Be Vietnam Pro', Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   background-color: #f7f9fc;
   color: #1e293b;
+  overflow-x: hidden;
 }

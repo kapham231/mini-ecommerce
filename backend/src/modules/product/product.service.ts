@@ -81,6 +81,7 @@ export class ProductService {
                 description: true,
                 price: true,
                 stock: true,
+                imageUrl: true,
                 categoryId: true,
                 isActive: true,
                 createdAt: true,
@@ -112,6 +113,7 @@ export class ProductService {
                 description: true,
                 price: true,
                 stock: true,
+                imageUrl: true,
                 categoryId: true,
                 isActive: true,
                 createdAt: true,
@@ -161,6 +163,7 @@ export class ProductService {
                 description: data.description || null,
                 price: new Prisma.Decimal(data.price),
                 stock: data.stock,
+                imageUrl: data.imageUrl || null,
                 categoryId: data.categoryId,
             },
             select: {
@@ -170,6 +173,7 @@ export class ProductService {
                 description: true,
                 price: true,
                 stock: true,
+                imageUrl: true,
                 categoryId: true,
                 isActive: true,
                 createdAt: true,
@@ -233,6 +237,7 @@ export class ProductService {
         if (data.description !== undefined) updateData.description = data.description;
         if (data.price) updateData.price = new Prisma.Decimal(data.price);
         if (data.stock !== undefined) updateData.stock = data.stock;
+        if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
         if (data.categoryId) updateData.category = { connect: { id: data.categoryId } };
         if (data.isActive !== undefined) updateData.isActive = data.isActive;
         updateData.updatedAt = new Date();
@@ -247,6 +252,7 @@ export class ProductService {
                 description: true,
                 price: true,
                 stock: true,
+                imageUrl: true,
                 categoryId: true,
                 isActive: true,
                 createdAt: true,
