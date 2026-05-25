@@ -1,7 +1,16 @@
 import { Link } from 'react-router-dom'
 
+type FooterNavLink =
+  | { label: string; to: string }
+  | { label: string; href: string }
+
+type FooterColumn = {
+  title: string
+  links: FooterNavLink[]
+}
+
 export function SiteFooter() {
-  const linkColumns = [
+  const linkColumns: FooterColumn[] = [
     {
       title: 'Về Kidozone',
       links: [
@@ -68,12 +77,12 @@ export function SiteFooter() {
                 <ul className='mt-3 space-y-1.5'>
                   {column.links.map((item) => (
                     <li key={item.label}>
-                      {item.to ? (
+                      {'to' in item ? (
                         <Link to={item.to} className='text-sm text-white/90 transition hover:text-white'>
                           {item.label}
                         </Link>
                       ) : (
-                        <a href={item.href ?? '#site-footer'} className='text-sm text-white/90 transition hover:text-white'>
+                        <a href={item.href} className='text-sm text-white/90 transition hover:text-white'>
                           {item.label}
                         </a>
                       )}
