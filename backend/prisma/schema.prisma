@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// --- prisma/schema.prisma ---
 
 generator client {
   provider = "prisma-client-js"
@@ -13,85 +9,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Static Role
+// 1. Phân quyền
 enum Role {
   USER
   ADMIN
 }
 
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
-  phone     String?
-  address   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  orders Order[] // A user has a lot of orders
-  cart   Cart?
-}
-
-model Category {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String   @unique
-  description String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-
-  products Product[] // A category has a lot of products
-}
-
-model Product {
-  id          String  @id @default(uuid())
-  name        String
-  slug        String  @unique
-  description String?
-  price       Decimal @db.Decimal(10, 2)
-  stock       Int     @default(0)
-  imageUrl    String?
-  isActive    Boolean @default(true)
-
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  orderItems OrderItem[] // A Order Cart has a lot of products
-  cartItems  CartItem[]
-}
-
-// Cart
-model Cart {
-  id        String     @id @default(uuid())
-  userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id])
-  items     CartItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  @@index([userId])
-}
-
-model CartItem {
-  id        String @id @default(uuid())
-  cartId    String
-  productId String
-  quantity  Int
-
-  cart    Cart    @relation(fields: [cartId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
-
-  @@unique([cartId, productId])
-  @@index([cartId])
-}
-
-// Static Order Status
+// 2. Trạng thái đơn hàng
 enum OrderStatus {
   PENDING
   PAID
@@ -100,25 +24,148 @@ enum OrderStatus {
   CANCELLED
 }
 
+// 3. Model User chính
+model User {
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String? // Nullable để hỗ trợ Social Login
+  avatar   String?
+  phone    String? @unique
+  role     Role    @default(USER)
+
+  isActive   Boolean @default(true)
+  isVerified Boolean @default(false)
+
+  lastLoginAt DateTime?
+  deletedAt   DateTime? // Hỗ trợ Soft Delete
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  accounts  Account[] // Cho Social Login (Google, Facebook...)
+  sessions  Session[] // Quản lý Refresh Token / Thiết bị
+  addresses Address[] // Một user có nhiều địa chỉ
+  orders    Order[]
+  cart      Cart?
+}
+
+// 4. Model Account (NextAuth Pattern) - Lưu thông tin định danh từ bên thứ 3
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String // e.g., "oauth"
+  provider          String // e.g., "google", "facebook"
+  providerAccountId String // ID của user bên phía Google/FB
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+// 5. Model Session - Quản lý Refresh Token & Device info
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String   @unique @db.VarChar(500)
+  userAgent    String?  @db.Text
+  ipAddress    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// 6. Model Address - Tách bảng để quản lý chuyên nghiệp
+model Address {
+  id           String  @id @default(uuid())
+  userId       String
+  receiverName String
+  phone        String
+  province     String
+  district     String
+  ward         String
+  detail       String
+  isDefault    Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// 7. Các model Ecommerce (Giữ nguyên logic của bạn nhưng tối ưu hóa)
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  categoryId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category   Category    @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  items     CartItem[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  cartId    String
+  productId String
+  quantity  Int
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+}
+
 model Order {
   id          String      @id @default(uuid())
   userId      String
   totalAmount Decimal     @db.Decimal(10, 2)
   status      OrderStatus @default(PENDING)
-  address     String
+  // Lưu snapshot thông tin lúc đặt hàng (để tránh user đổi địa chỉ sau này làm sai lệch đơn cũ)
+  address     String      @db.Text
   phone       String
 
   paidAt      DateTime?
   shippedAt   DateTime?
   completedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   user  User        @relation(fields: [userId], references: [id])
   items OrderItem[]
-
-  @@index([userId])
 }
 
 model OrderItem {
@@ -130,8 +177,6 @@ model OrderItem {
   quantity  Int
   price     Decimal @db.Decimal(10, 2)
 
-  order   Order   @relation(fields: [orderId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
-
-  @@index([orderId])
 }

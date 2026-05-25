@@ -49,7 +49,7 @@ export class AuthController {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: 3 * 24 * 60 * 60 * 1000,
+            maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days (miliseconds)
         });
 
         res.status(200).json({
@@ -59,5 +59,36 @@ export class AuthController {
                 token: result.token,
             },
         });
+    });
+
+    /**
+     * Social Login Callback handler
+     * Passport will call this after successful authentication
+     */
+    socialCallback = asyncHandler(async (req: Request, res: Response) => {
+        const user = req.user as any;
+        
+        if (!user) {
+            return res.redirect(`${process.env.FRONTEND_URL || "http://localhost:3000"}/login?error=auth_failed`);
+        }
+
+        const { generateToken } = await import("../../shared/utils/jwt");
+        
+        // Generate token
+        const token = generateToken({
+            id: user.id,
+            role: user.role,
+        });
+
+        // Set token in cookie
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
+        });
+
+        // Redirect to frontend
+        res.redirect(`${process.env.FRONTEND_URL || "http://localhost:3000"}/auth/success`);
     });
 }

@@ -21,6 +21,7 @@ import { RegisterPage } from '~/pages/RegisterPage'
 import { CartPage } from './pages/CartPage'
 import { WishlistPage } from './pages/WishlistPage'
 import { ErrorPage } from './pages/ErrorPage'
+import { AboutUsPage } from './pages/AboutUsPage'
 
 function AppRoutes() {
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated)
@@ -51,6 +52,7 @@ function AppRoutes() {
       />
       <Route path='/error' element={<ErrorPage />} />
       <Route path='*' element={<ErrorPage defaultStatusCode={404} />} />
+      <Route path='/about-us' element={<AboutUsPage />} />
     </Routes>
   )
 }

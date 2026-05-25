@@ -9,6 +9,7 @@ import { Router } from "express";
 import { CartController } from "./cart.controller";
 import { CartService } from "./cart.service";
 import { validate } from "../../shared/middleware/validation.middleware";
+import { authMiddleware } from "../../shared/middleware";
 import {
     addToCartSchema,
     updateCartItemSchema,
@@ -21,6 +22,9 @@ export function createCartRouter(): Router {
     // Instantiate service and controller
     const cartService = new CartService();
     const cartController = new CartController(cartService);
+
+    // All cart routes require authentication
+    router.use(authMiddleware);
 
     // Routes
     router.get("/", cartController.getCart);
