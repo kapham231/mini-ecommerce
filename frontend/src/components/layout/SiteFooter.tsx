@@ -12,11 +12,9 @@ type FooterColumn = {
 export function SiteFooter() {
   const linkColumns: FooterColumn[] = [
     {
-      title: 'Về Kidozone',
+      title: 'Kidozone',
       links: [
-        { label: 'Câu chuyện thương hiệu', href: '#site-footer' },
-        { label: 'Điều khoản sử dụng', href: '#site-footer' },
-        { label: 'Chính sách bảo mật', href: '#site-footer' }
+        { label: 'Về chúng tôi', to: '/about-us' },
       ],
     },
     {
@@ -31,7 +29,6 @@ export function SiteFooter() {
     {
       title: 'Khám phá',
       links: [
-        { label: 'Tin tức', to: '/news' },
         { label: 'Bài viết', to: '/blog/articles' },
         { label: 'Sản phẩm', to: '/products' },
       ],
@@ -40,9 +37,9 @@ export function SiteFooter() {
       title: 'Hỗ trợ',
       links: [
         { label: 'Tư vấn chọn quà', to: '/contact' },
-        { label: 'Trung tâm trợ giúp', to: '/help-center' },
-        { label: 'Vận chuyển', to: '/shipping' },
-        { label: 'Đổi trả', to: '/returns' },
+        { label: 'Trung tâm trợ giúp', to: '/contact' },
+        { label: 'Vận chuyển', to: '/contact' },
+        { label: 'Đổi trả', to: '/contact' },
         { label: 'Liên hệ', to: '/contact' },
       ],
     },

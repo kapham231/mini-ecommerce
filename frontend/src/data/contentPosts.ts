@@ -1,38 +1,5 @@
 import type { ContentPost } from '~/types/content'
 
-export const newsPosts: ContentPost[] = [
-  {
-    id: 1,
-    title: 'Ra mắt BST thú bông mùa hè 2026',
-    slug: 'ra-mat-bo-suu-tap-thu-bong-mua-he-2026',
-    excerpt: 'Bộ sưu tập mới với chất liệu mềm mại, màu pastel và thiết kế giới hạn cho bé từ 3 tuổi.',
-    content:
-      'Kidozone giới thiệu bộ sưu tập thú bông mùa hè 2026 với chất liệu bông an toàn, kháng khuẩn nhẹ và dễ vệ sinh. Các mẫu mới tập trung vào gam màu dịu, phù hợp phòng ngủ của bé và làm quà tặng dịp sinh nhật.',
-    image: '/mascot/mascot_4.svg',
-    publishedAt: '2026-04-10',
-  },
-  {
-    id: 2,
-    title: 'Ưu đãi cuối tuần: Giảm đến 25% cho đồ chơi giáo dục',
-    slug: 'uu-dai-cuoi-tuan-giam-den-25-do-choi-giao-duc',
-    excerpt: 'Áp dụng cho các dòng xếp hình, puzzle và đồ chơi phát triển tư duy trong 3 ngày.',
-    content:
-      'Chương trình ưu đãi cuối tuần áp dụng cho nhiều sản phẩm giáo dục nổi bật. Khách hàng có thể kết hợp với mã miễn phí vận chuyển để tiết kiệm tối đa cho mỗi đơn hàng.',
-    image: '/mascot/mascot_5.svg',
-    publishedAt: '2026-04-18',
-  },
-  {
-    id: 3,
-    title: 'Mở rộng giao hàng nhanh trong nội thành',
-    slug: 'mo-rong-giao-hang-nhanh-trong-noi-thanh',
-    excerpt: 'Dịch vụ giao 2 giờ đã có mặt tại thêm 6 quận, giúp nhận quà kịp cho các dịp đặc biệt.',
-    content:
-      'Để phục vụ phụ huynh tốt hơn, Kidozone mở rộng phạm vi giao nhanh 2 giờ tại khu vực nội thành. Các đơn đặt trước 19:00 sẽ được ưu tiên xử lý trong ngày.',
-    image: '/mascot/mascot_6.svg',
-    publishedAt: '2026-04-21',
-  },
-]
-
 export const articlePosts: ContentPost[] = [
   {
     id: 1,

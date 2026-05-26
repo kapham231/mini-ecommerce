@@ -13,7 +13,6 @@ import { CategoriesPage } from '~/pages/CategoriesPage'
 import { ContactPage } from '~/pages/ContactPage'
 import { HomePage } from '~/pages/HomePage'
 import { LoginPage } from '~/pages/LoginPage'
-import { NewsPage } from '~/pages/NewsPage'
 import { ProfilePage } from '~/pages/ProfilePage'
 import { ProductDetailPage } from '~/pages/ProductDetailPage'
 import { ProductsPage } from '~/pages/ProductsPage'
@@ -39,7 +38,6 @@ function AppRoutes() {
       <Route path='/admin/categories/new' element={<AdminCategoryFormPage />} />
       <Route path='/admin/categories/:id/edit' element={<AdminCategoryEditPage />} />
       <Route path='/admin/products/:id/edit' element={<AdminProductEditPage />} />
-      <Route path='/news' element={<NewsPage />} />
       <Route path='/blog/articles' element={<BlogArticlesPage />} />
       <Route path='/contact' element={<ContactPage />} />
       <Route path='/login' element={isAuthenticated ? <Navigate to='/' replace /> : <LoginPage />} />

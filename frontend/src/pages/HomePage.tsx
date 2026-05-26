@@ -93,12 +93,12 @@ export function HomePage() {
             </div>
           </section>
 
-          <section id='news' className='mt-16 scroll-mt-32 sm:mt-20'>
+          <section id='blog' className='mt-16 scroll-mt-32 sm:mt-20'>
             <SectionHeading
               theme='shop'
-              eyebrow='Blog & ưu đãi'
-              title='Thêm chút đặc biệt cho món quà'
-              description='Gợi ý quà tặng, ưu đãi theo tuần và dịch vụ cá nhân hóa — cập nhật thường xuyên.'
+              eyebrow='Bài viết và ưu đãi'
+              title='Tìm hiểu thêm về các ưu đãi của Kidozone'
+              description='Gợi ý quà tặng, ưu đãi theo tuần và dịch vụ cá nhân'
               tone='pink'
             />
             <div className='mt-10 grid gap-6 lg:grid-cols-2 lg:gap-8'>

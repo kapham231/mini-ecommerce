@@ -178,8 +178,8 @@ export function SiteHeader() {
         {isMobileMenuOpen && (
           <nav className='border-t border-shop-ink/10 bg-white px-4 py-3 text-shop-ink' aria-label='Điều hướng chính di động'>
             <div className='grid grid-cols-2 gap-2 text-sm font-semibold'>
-              <Link to='/' className='rounded-lg px-2 py-2 hover:bg-shop-blue' onClick={() => setIsMobileMenuOpen(false)}>
-                Trang chủ
+              <Link to='/about-us' className='rounded-lg px-2 py-2 hover:bg-shop-blue' onClick={() => setIsMobileMenuOpen(false)}>
+                Về chúng tôi
               </Link>
               <Link
                 to='/categories'
@@ -190,9 +190,6 @@ export function SiteHeader() {
               </Link>
               <Link to='/products' className='rounded-lg px-2 py-2 hover:bg-shop-blue' onClick={() => setIsMobileMenuOpen(false)}>
                 Sản phẩm
-              </Link>
-              <Link to='/news' className='rounded-lg px-2 py-2 hover:bg-shop-blue' onClick={() => setIsMobileMenuOpen(false)}>
-                Tin tức
               </Link>
               <Link
                 to='/blog/articles'
@@ -222,8 +219,8 @@ export function SiteHeader() {
           className='flex min-w-0 items-center justify-center gap-x-2 overflow-x-auto whitespace-nowrap py-1 sm:gap-x-5 md:gap-x-7'
           aria-label='Điều hướng chính'
         >
-          <Link to='/' className={navLinkClass}>
-            Trang chủ
+          <Link to='/about-us' className={navLinkClass}>
+            Về chúng tôi
           </Link>
           <Link to='/categories' className={navLinkClass}>
             Danh mục
@@ -231,17 +228,11 @@ export function SiteHeader() {
           <Link to='/products' className={navLinkClass}>
             Sản phẩm
           </Link>
-          <Link to='/news' className={navLinkClass}>
-            Tin tức
-          </Link>
           <Link to='/blog/articles' className={navLinkClass}>
             Bài viết
           </Link>
           <Link to='/contact' className={navLinkClass}>
             Liên hệ
-          </Link>
-          <Link to='/about-us' className={navLinkClass}>
-            Về chúng tôi
           </Link>
         </nav>
 
@@ -254,6 +245,13 @@ export function SiteHeader() {
           >
             <IconSearch className='h-5 w-5' />
           </button>
+          <Link
+            to='/wishlist'
+            className='relative inline-flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 transition hover:bg-shop-blue/55 hover:text-neutral-900 sm:h-10 sm:w-10'
+            aria-label='Danh sách yêu thích'
+          >
+            <IconHeart className='h-5 w-5' />
+          </Link>
           <Link
             to={isAuthenticated ? '/profile' : '/login'}
             className='inline-flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 transition hover:bg-shop-blue/55 hover:text-neutral-900 sm:h-10 sm:w-10'
