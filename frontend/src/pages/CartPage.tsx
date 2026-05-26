@@ -27,10 +27,10 @@ export function CartPage() {
       <SiteHeader />
 
       <main className='mx-auto max-w-6xl px-4 py-10 sm:px-6'>
-        <div className='mb-7 flex items-end justify-between gap-3'>
+        <div className='mb-7 flex items-end justify-between gap-2'>
           <div>
-            <h1 className='text-2xl font-extrabold text-shop-ink sm:text-3xl'>Giỏ hàng của bạn</h1>
-            <p className='mt-1 text-sm text-shop-ink/65'>{totalItems} sản phẩm trong giỏ</p>
+            <h1 className='text-xl font-extrabold text-shop-ink sm:text-3xl'>Giỏ hàng của bạn</h1>
+            <p className='mt-3 text-sm text-shop-ink/65'>{totalItems} sản phẩm trong giỏ</p>
           </div>
           <Link to='/products' className='text-sm font-semibold text-kid-green hover:underline'>
             + Thêm sản phẩm
