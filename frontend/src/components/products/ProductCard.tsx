@@ -106,9 +106,11 @@ export function ProductCard({ product, linkTo }: ProductCardProps) {
         </Link>
         <div className='flex flex-1 flex-col px-2 pb-2.5 pt-2 sm:px-5 sm:pb-5 sm:pt-3.5'>
           <div className='flex items-start justify-between gap-1'>
-            <div className='flex min-w-0 flex-1 flex-col gap-0.5 text-[9px] text-shop-ink/45 sm:flex-row sm:items-start sm:gap-2 sm:text-[10px]'>
+            <div className='flex min-w-0 flex-3 flex-col gap-0.5 text-[9px] text-shop-ink/45 sm:items-start sm:gap-1 sm:text-[10px]'>
               {!showBestSellerBadge && (
-                <span className='truncate font-semibold uppercase sm:min-w-0'>{brand}</span>
+              <span className='truncate font-semibold uppercase sm:min-w-0'>
+                {brand}
+              </span>
               )}
               <span className='truncate font-medium sm:shrink-0 sm:whitespace-nowrap'>
                 Mã: {sku}
