@@ -9,6 +9,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../shared/prisma/client";
 import { generateUniqueSlug } from "../../shared/utils";
+import { mapProductDTO } from "../../shared/utils/dto-mapper";
 import {
     NotFoundError,
     ValidationError,
@@ -21,16 +22,6 @@ import {
     ProductDTO,
 } from "./product.types";
 import { PaginatedResponse } from "../../common/types/pagination";
-
-/**
- * Map Prisma product (with Decimal price) to ProductDTO (with number price)
- */
-function mapToProductDTO(product: any): ProductDTO {
-    return {
-        ...product,
-        price: product.price.toNumber(),
-    };
-}
 
 export class ProductService {
     /**
@@ -90,7 +81,7 @@ export class ProductService {
         });
 
         return {
-            data: products.map(mapToProductDTO),
+            data: products.map(mapProductDTO),
             pagination: {
                 page,
                 limit,
@@ -125,7 +116,7 @@ export class ProductService {
             throw new NotFoundError("Product not found");
         }
 
-        return mapToProductDTO(product);
+        return mapProductDTO(product);
     }
 
     /**
@@ -181,7 +172,7 @@ export class ProductService {
             },
         });
 
-        return mapToProductDTO(product);
+        return mapProductDTO(product);
     }
 
     /**
@@ -260,7 +251,7 @@ export class ProductService {
             },
         });
 
-        return mapToProductDTO(updated);
+        return mapProductDTO(updated);
     }
 
     /**

@@ -17,6 +17,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
 import { errorMiddleware } from "./shared/middleware";
+import { env } from "./shared/utils/env";
 import swaggerUi from "swagger-ui-express";
 import { generateOpenAPIDocument } from "./shared/docs/openapi";
 import { registerRoutes } from "./shared/docs/register";

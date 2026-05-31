@@ -9,6 +9,7 @@ import { Router } from "express";
 import { ProductController } from "./product.controller";
 import { ProductService } from "./product.service";
 import { validate } from "../../shared/middleware/validation.middleware";
+import { authMiddleware, adminMiddleware } from "../../shared/middleware";
 import {
     productQuerySchema,
     createProductSchema,
@@ -38,18 +39,24 @@ export function createProductRouter(): Router {
 
     router.post(
         "/",
+        authMiddleware,
+        adminMiddleware,
         validate({ body: createProductSchema }),
         productController.createProduct
     );
 
     router.put(
         "/:id",
+        authMiddleware,
+        adminMiddleware,
         validate({ params: productIdParamSchema, body: updateProductSchema }),
         productController.updateProduct
     );
 
     router.delete(
         "/:id",
+        authMiddleware,
+        adminMiddleware,
         validate({ params: productIdParamSchema }),
         productController.deleteProduct
     );

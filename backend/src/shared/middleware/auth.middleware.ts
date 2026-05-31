@@ -30,7 +30,7 @@ export const authMiddleware = (
         const decoded = verifyToken(token);
         
         // Attach user info to request
-        (req as any).user = decoded;
+        req.user = decoded;
         
         next();
     } catch (error) {

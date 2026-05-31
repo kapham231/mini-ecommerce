@@ -6,6 +6,7 @@ import { Router } from "express";
 import { CategoryController } from "./category.controller";
 import { CategoryService } from "./category.service";
 import { validate } from "../../shared/middleware/validation.middleware";
+import { authMiddleware, adminMiddleware } from "../../shared/middleware";
 import {
     createCategorySchema,
     updateCategorySchema,
@@ -28,18 +29,24 @@ export function createCategoryRouter(): Router {
 
     router.post(
         "/",
+        authMiddleware,
+        adminMiddleware,
         validate({ body: createCategorySchema }),
         categoryController.createCategory
     );
 
     router.put(
         "/:id",
+        authMiddleware,
+        adminMiddleware,
         validate({ params: categoryIdParamSchema, body: updateCategorySchema }),
         categoryController.updateCategory
     );
 
     router.delete(
         "/:id",
+        authMiddleware,
+        adminMiddleware,
         validate({ params: categoryIdParamSchema }),
         categoryController.deleteCategory
     );

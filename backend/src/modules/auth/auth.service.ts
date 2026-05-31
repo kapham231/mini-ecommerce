@@ -14,13 +14,17 @@ import {
     UnauthorizedError
 } from "../../shared/types/error";
 import { RegisterRequest, LoginRequest, AuthResponse } from "./auth.types";
-import { generateToken } from "../../shared/utils/jwt";
+import {
+    generateToken,
+    generateRefreshToken,
+    verifyRefreshToken,
+} from "../../shared/utils/jwt";
 
 export class AuthService {
     /**
      * Register a new user
      */
-    async register(data: RegisterRequest): Promise<AuthResponse> {
+    async register(data: RegisterRequest, ipAddress?: string, userAgent?: string): Promise<AuthResponse> {
         const { name, email, password } = data;
 
         // Check if user already exists
@@ -54,11 +58,13 @@ export class AuthService {
             },
         });
 
-        // Generate token
+        // Generate access token
         const token = generateToken({
             id: user.id,
             role: user.role,
         });
+
+        const refreshToken = await this.createRefreshSession(user.id);
 
         return {
             user: {
@@ -68,13 +74,14 @@ export class AuthService {
                 role: user.role,
             },
             token,
+            refreshToken,
         };
     }
 
     /**
      * Login a user
      */
-    async login(data: LoginRequest): Promise<AuthResponse> {
+    async login(data: LoginRequest, ipAddress?: string, userAgent?: string): Promise<AuthResponse> {
         const { email, password } = data;
 
         // Find user by email
@@ -107,13 +114,13 @@ export class AuthService {
             data: { lastLoginAt: new Date() },
         });
 
-        // Generate token
+        // Generate access token
         const token = generateToken({
             id: user.id,
             role: user.role,
         });
 
-        const { password: _, ...userWithoutPassword } = user;
+        const refreshToken = await this.createRefreshSession(user.id, ipAddress, userAgent);
 
         return {
             user: {
@@ -123,6 +130,76 @@ export class AuthService {
                 role: user.role,
             },
             token,
+            refreshToken,
+        };
+    }
+
+    /**
+     * Create a refresh session record
+     */
+    async createRefreshSession(userId: string, ipAddress?: string, userAgent?: string): Promise<string> {
+        const refreshToken = generateRefreshToken({ userId });
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+        await prisma.session.create({
+            data: {
+                userId,
+                refreshToken,
+                ipAddress: ipAddress || null,
+                userAgent: userAgent || null,
+                expiresAt,
+            },
+        });
+
+        return refreshToken;
+    }
+
+    /**
+     * Refresh access token using refresh token
+     */
+    async refreshToken(refreshToken: string): Promise<AuthResponse> {
+        if (!refreshToken) {
+            throw new UnauthorizedError("Refresh token is missing");
+        }
+
+        verifyRefreshToken(refreshToken);
+
+        const session = await prisma.session.findUnique({
+            where: { refreshToken },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        role: true,
+                        isActive: true,
+                        deletedAt: true,
+                    },
+                },
+            },
+        });
+
+        if (!session || session.expiresAt < new Date()) {
+            throw new UnauthorizedError("Refresh token is invalid or expired");
+        }
+
+        const user = session.user;
+        if (!user || user.deletedAt || !user.isActive) {
+            throw new UnauthorizedError("User session is invalid");
+        }
+
+        const token = generateToken({ id: user.id, role: user.role });
+
+        return {
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            },
+            token,
+            refreshToken,
         };
     }
 
@@ -164,57 +241,62 @@ export class AuthService {
     }) {
         const { email, name, avatar, provider, providerAccountId, access_token, refresh_token } = data;
 
-        // 1. Find user by email
-        let user = await prisma.user.findUnique({
-            where: { email },
-            include: { accounts: true }
+        // 1. Try to resolve existing social account first
+        const existingAccount = await prisma.account.findUnique({
+            where: {
+                provider_providerAccountId: {
+                    provider,
+                    providerAccountId,
+                },
+            },
+            include: { user: true },
         });
 
-        if (user) {
-            // Check if account already exists for this provider
-            const existingAccount = user.accounts.find(
-                acc => acc.provider === provider && acc.providerAccountId === providerAccountId
-            );
+        if (existingAccount) {
+            const user = existingAccount.user;
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { lastLoginAt: new Date() },
+            });
+            return user;
+        }
 
-            if (!existingAccount) {
-                // Link new provider account to existing user
-                await prisma.account.create({
-                    data: {
-                        userId: user.id,
+        // 2. Check whether an account already exists with the same email.
+        const userByEmail = await prisma.user.findUnique({
+            where: { email },
+            include: { accounts: true },
+        });
+
+        if (userByEmail) {
+            // Prevent automatic linking if the email already exists with another login method.
+            throw new ConflictError(
+                "Email already registered. Please sign in with the existing method before linking social login."
+            );
+        }
+
+        // 3. Create a new user with a linked social account.
+        const user = await prisma.user.create({
+            data: {
+                email,
+                name,
+                avatar,
+                isVerified: true,
+                cart: {
+                    create: {},
+                },
+                accounts: {
+                    create: {
                         type: "oauth",
                         provider,
                         providerAccountId,
                         access_token,
-                        refresh_token
-                    }
-                });
-            }
-        } else {
-            // 2. Create new user and account
-            user = await prisma.user.create({
-                data: {
-                    email,
-                    name,
-                    avatar,
-                    isVerified: true, // Social accounts are usually pre-verified
-                    cart: {
-                        create: {}
+                        refresh_token,
                     },
-                    accounts: {
-                        create: {
-                            type: "oauth",
-                            provider,
-                            providerAccountId,
-                            access_token,
-                            refresh_token
-                        }
-                    }
                 },
-                include: { accounts: true }
-            });
-        }
+            },
+            include: { accounts: true },
+        });
 
-        // Update last login
         await prisma.user.update({
             where: { id: user.id },
             data: { lastLoginAt: new Date() },
