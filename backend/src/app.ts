@@ -11,10 +11,10 @@
  * - Modules are completely isolated from each other
  */
 
+import "dotenv/config";
 import express, { Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 
 import { errorMiddleware } from "./shared/middleware";
 import { env } from "./shared/utils/env";
@@ -33,8 +33,6 @@ import { createOrderRouter } from "./modules/order/order.routes";
 import { createUploadRouter } from "./modules/upload/upload.routes";
 import { createAddressRouter } from "./modules/address/address.routes";
 import { createUserRouter } from "./modules/user/user.routes";
-
-dotenv.config();
 
 /**
  * Create and configure Express app

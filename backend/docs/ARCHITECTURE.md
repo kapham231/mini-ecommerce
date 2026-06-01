@@ -441,7 +441,7 @@ Follow the "Module Template" section above
 
 ```env
 # .env
-DATABASE_URL="mysql://user:password@localhost/dbname"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/dbname"
 JWT_SECRET="your-secret-key"
 NODE_ENV="development"
 PORT=5000
