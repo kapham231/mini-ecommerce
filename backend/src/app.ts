@@ -88,13 +88,13 @@ export function createApp(): Express {
     if (process.env.NODE_ENV !== 'production') {
         // Register all schemas and routes to OpenAPI registry
         registerRoutes();
-        
+
         // Generate document
         const openAPIDocument = generateOpenAPIDocument();
-        
+
         // Serve Swagger UI
         app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openAPIDocument));
-        
+
         // Expose raw JSON spec
         app.get('/api-docs.json', (_req, res) => {
             res.setHeader('Content-Type', 'application/json');

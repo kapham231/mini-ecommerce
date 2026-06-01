@@ -91,7 +91,7 @@ export class AuthController {
      */
     socialCallback = asyncHandler(async (req: Request, res: Response) => {
         const user = req.user as any;
-        
+
         if (!user) {
             return res.redirect(`${process.env.FRONTEND_URL || "http://localhost:3000"}/login?error=auth_failed`);
         }
