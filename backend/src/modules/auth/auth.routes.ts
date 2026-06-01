@@ -9,6 +9,7 @@ import passport from "passport";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { validate } from "../../shared/middleware/validation.middleware";
+import { authRateLimiter } from "../../shared/middleware/rate-limit.middleware";
 import { registerSchema, loginSchema } from "./auth.types";
 
 export function createAuthRouter(): Router {
@@ -23,14 +24,21 @@ export function createAuthRouter(): Router {
     // ============================================
     router.post(
         "/register",
+        authRateLimiter,
         validate({ body: registerSchema }),
         authController.register
     );
 
     router.post(
         "/login",
+        authRateLimiter,
         validate({ body: loginSchema }),
         authController.login
+    );
+
+    router.post(
+        "/refresh",
+        authController.refreshToken
     );
 
     // ============================================

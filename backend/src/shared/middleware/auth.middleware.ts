@@ -28,10 +28,10 @@ export const authMiddleware = (
 
         // Verify token
         const decoded = verifyToken(token);
-        
+
         // Attach user info to request
-        (req as any).user = decoded;
-        
+        req.user = decoded;
+
         next();
     } catch (error) {
         next(new UnauthorizedError("Invalid or expired token"));
@@ -50,10 +50,10 @@ export const adminMiddleware = (
     next: NextFunction
 ) => {
     const user = (req as any).user;
-    
+
     if (!user || user.role !== "ADMIN") {
         return next(new UnauthorizedError("Admin access required"));
     }
-    
+
     next();
 };
