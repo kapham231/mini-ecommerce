@@ -5,10 +5,8 @@
  * Separated from app configuration for easier testing.
  */
 
-import dotenv from "dotenv";
+import "dotenv/config";
 import { createApp } from "./app";
-
-dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const app = createApp();

@@ -12,7 +12,7 @@ Express.js + TypeScript + Prisma with Modular Monolith Architecture
 
 - Node.js 18+
 - npm
-- MySQL database
+- PostgreSQL database
 
 ### Installation
 
@@ -25,7 +25,14 @@ cp .env.example .env
 # Edit .env with your database credentials
 
 # 3. Setup database
-npx prisma migrate dev
+- If this is a fresh PostgreSQL environment, run:
+    ```bash
+    npx prisma migrate dev --name init
+    ```
+    If you are reusing an existing database schema after switching from MySQL, run:
+    ```bash
+    npx prisma migrate reset --force
+    ```
 
 # 4. Start development server
 npm run dev
@@ -285,7 +292,7 @@ Create `.env` file in root:
 
 ```env
 # Database
-DATABASE_URL="mysql://user:password@localhost:3306/mini_ecommerce"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/mini_ecommerce"
 
 # JWT
 JWT_SECRET="your-secret-key-change-in-production"

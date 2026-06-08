@@ -10,7 +10,7 @@ export class AddressController {
      * GET /addresses
      */
     getAddresses = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user.id;
+        const userId = req.user?.id as string;
         const addresses = await this.addressService.getAddresses(userId);
 
         res.status(200).json({
@@ -23,7 +23,7 @@ export class AddressController {
      * POST /addresses
      */
     createAddress = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user.id;
+        const userId = req.user?.id as string;
         const data = req.body as CreateAddressRequest;
         const address = await this.addressService.createAddress(userId, data);
 
@@ -37,7 +37,7 @@ export class AddressController {
      * PATCH /addresses/:id
      */
     updateAddress = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user.id;
+        const userId = req.user?.id as string;
         const id = req.params.id as string;
         const data = req.body as UpdateAddressRequest;
         const address = await this.addressService.updateAddress(userId, id, data);
@@ -52,7 +52,7 @@ export class AddressController {
      * DELETE /addresses/:id
      */
     deleteAddress = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user.id;
+        const userId = req.user?.id as string;
         const id = req.params.id as string;
         await this.addressService.deleteAddress(userId, id);
 
@@ -66,7 +66,7 @@ export class AddressController {
      * PATCH /addresses/:id/default
      */
     setDefaultAddress = asyncHandler(async (req: Request, res: Response) => {
-        const userId = (req as any).user.id;
+        const userId = req.user?.id as string;
         const id = req.params.id as string;
         const address = await this.addressService.setDefaultAddress(userId, id);
 

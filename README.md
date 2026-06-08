@@ -23,7 +23,7 @@
 - **Kiến trúc Modular**: Hệ thống được chia thành các module độc lập (Auth, User, Product, Category, Cart, Order, Address), dễ bảo trì và mở rộng.
 - **Xác thực đa tầng**: Middleware kiểm tra quyền truy cập (Auth & Admin Middleware).
 - **Validation chặt chẽ**: Toàn bộ dữ liệu đầu vào được xác thực bằng Zod trước khi xử lý.
-- **Quản lý Database**: Sử dụng Prisma ORM để tương tác với MySQL, xử lý các mối quan hệ phức tạp (One-to-Many, Many-to-Many).
+- **Quản lý Database**: Sử dụng Prisma ORM để tương tác với PostgreSQL, xử lý các mối quan hệ phức tạp (One-to-Many, Many-to-Many).
 - **Tài liệu API**: Tích hợp Swagger (OpenAPI) giúp việc tích hợp và kiểm thử API trở nên chuyên nghiệp.
 
 ---
@@ -38,11 +38,11 @@
 - **HTTP Client**: Axios
 - **Routing**: React Router DOM
 
-### Backend Stack
+-### Backend Stack
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Language**: TypeScript
-- **Database**: MySQL
+- **Database**: PostgreSQL
 - **ORM**: Prisma
 - **Auth**: JWT, Bcrypt
 - **Documentation**: Swagger / Zod-to-OpenAPI
@@ -76,7 +76,7 @@ mini-ecommerce/
 
 ### 1. Yêu cầu hệ thống
 - Node.js (v18+)
-- MySQL Database
+- PostgreSQL Database
 
 ### 2. Cài đặt Backend
 ```bash

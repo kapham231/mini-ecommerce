@@ -28,4 +28,5 @@ export interface AuthResponse {
         role: string;
     };
     token: string;
+    refreshToken: string;
 }

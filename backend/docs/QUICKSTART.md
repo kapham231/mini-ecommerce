@@ -314,7 +314,7 @@ npm install zod
 ### "Prisma error: DATABASE_URL not in .env"
 ```env
 # .env
-DATABASE_URL="mysql://user:pass@localhost:3306/db"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/db"
 JWT_SECRET="your-secret"
 ```
 

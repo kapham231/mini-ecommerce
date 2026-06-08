@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { authMiddleware, uploadRateLimiter } from "../../shared/middleware";
 import { validate } from "../../shared/middleware/validation.middleware";
 import { UploadController } from "./upload.controller";
 import { UploadService } from "./upload.service";
@@ -12,6 +13,8 @@ export function createUploadRouter(): Router {
 
     router.post(
         "/presign",
+        authMiddleware,
+        uploadRateLimiter,
         validate({ body: createPresignedUploadSchema }),
         uploadController.createPresignedUpload
     );

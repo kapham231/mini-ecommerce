@@ -11,12 +11,13 @@
  * - Modules are completely isolated from each other
  */
 
+import "dotenv/config";
 import express, { Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 
 import { errorMiddleware } from "./shared/middleware";
+import { env } from "./shared/utils/env";
 import swaggerUi from "swagger-ui-express";
 import { generateOpenAPIDocument } from "./shared/docs/openapi";
 import { registerRoutes } from "./shared/docs/register";
@@ -32,8 +33,6 @@ import { createOrderRouter } from "./modules/order/order.routes";
 import { createUploadRouter } from "./modules/upload/upload.routes";
 import { createAddressRouter } from "./modules/address/address.routes";
 import { createUserRouter } from "./modules/user/user.routes";
-
-dotenv.config();
 
 /**
  * Create and configure Express app
@@ -87,13 +86,13 @@ export function createApp(): Express {
     if (process.env.NODE_ENV !== 'production') {
         // Register all schemas and routes to OpenAPI registry
         registerRoutes();
-        
+
         // Generate document
         const openAPIDocument = generateOpenAPIDocument();
-        
+
         // Serve Swagger UI
         app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openAPIDocument));
-        
+
         // Expose raw JSON spec
         app.get('/api-docs.json', (_req, res) => {
             res.setHeader('Content-Type', 'application/json');
