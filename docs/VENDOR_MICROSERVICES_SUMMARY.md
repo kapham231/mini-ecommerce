@@ -21,7 +21,7 @@ Dự án **KidoZone - Mini Ecommerce Platform** là một nền tảng thương 
   - `cart`: giỏ hàng
   - `order`: đơn hàng
   - `address`: địa chỉ người dùng
-- Cơ sở dữ liệu: **MySQL + Prisma ORM** với schema và migration trong `backend/prisma/`.
+- Cơ sở dữ liệu: **PostgreSQL + Prisma ORM** với schema và migration trong `backend/prisma/`.
 - Validation: sử dụng **Zod** để xác thực request.
 - Middleware chung: auth, admin, validation, error handling.
 - API được tổ chức theo đường dẫn REST chuẩn: `/api/auth`, `/api/products`, `/api/categories`, ...

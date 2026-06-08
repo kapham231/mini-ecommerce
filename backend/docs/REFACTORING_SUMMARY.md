@@ -80,7 +80,7 @@ HTTP Response
               ↓
     ┌────────────────────┐
     │ Single Database    │
-    │ (MySQL/PostgreSQL) │
+    │ (PostgreSQL)       │
     └────────────────────┘
 ```
 

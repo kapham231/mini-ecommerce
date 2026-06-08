@@ -1,3 +1,4 @@
+-- Backup of MySQL migration 20260418122244_add_description_and_is_active_to_category
 /*
   Warnings:
 

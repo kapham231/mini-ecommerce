@@ -1,3 +1,5 @@
+-- Backup of MySQL migration 20260317105752_init_table
+-- Original MySQL SQL preserved for reference
 -- CreateTable
 CREATE TABLE `User` (
     `id` CHAR(36) NOT NULL DEFAULT (uuid()),
