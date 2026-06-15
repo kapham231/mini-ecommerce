@@ -75,6 +75,14 @@ Welcome to the new Modular Monolith architecture! This index helps you navigate 
   - Troubleshooting
   - **FOLLOW this to verify everything works**
 
+### Module Documentation
+- **[NOTIFICATION.md](./NOTIFICATION.md)** 🔔
+  - Schema & database design
+  - API endpoints reference
+  - Cross-module usage examples
+  - Trạng thái hiện tại & roadmap
+  - **READ THIS for notification system details**
+
 ---
 
 ## 🎯 By Use Case

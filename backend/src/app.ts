@@ -33,6 +33,7 @@ import { createOrderRouter } from "./modules/order/order.routes";
 import { createUploadRouter } from "./modules/upload/upload.routes";
 import { createAddressRouter } from "./modules/address/address.routes";
 import { createUserRouter } from "./modules/user/user.routes";
+import { createNotificationRouter } from "./modules/notification/notification.routes";
 
 /**
  * Create and configure Express app
@@ -74,6 +75,7 @@ export function createApp(): Express {
     app.use("/api/cart", createCartRouter());
     app.use("/api/orders", createOrderRouter());
     app.use("/api/uploads", createUploadRouter());
+    app.use("/api/notifications", createNotificationRouter());
 
     // Health check endpoint
     app.get("/health", (_req, res) => {
