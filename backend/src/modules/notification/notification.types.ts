@@ -40,8 +40,8 @@ export const createNotificationSchema = z.object({
  * Hỗ trợ phân trang + filter theo loại và trạng thái đọc.
  */
 export const notificationQuerySchema = z.object({
-    page: z.string().optional().default("1").transform(Number),
-    limit: z.string().optional().default("20").transform(Number),
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
     type: z.nativeEnum(NotificationType).optional(),
     isRead: z
         .enum(["true", "false"])

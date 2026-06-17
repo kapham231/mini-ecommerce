@@ -1,12 +1,22 @@
 import type { CookieOptions } from "express";
+import { env } from "./env";
 
-const isProduction = process.env.NODE_ENV === "production";
+function isCrossSiteAuthDeployment() {
+    try {
+        return new URL(env.FRONTEND_URL).origin !== new URL(env.CALLBACK_URL_HOST).origin;
+    } catch {
+        return false;
+    }
+}
+
+const useSecureCrossSiteCookies =
+    process.env.NODE_ENV === "production" || isCrossSiteAuthDeployment();
 
 export function getAccessTokenCookieOptions(): CookieOptions {
     return {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+        secure: useSecureCrossSiteCookies,
+        sameSite: useSecureCrossSiteCookies ? "none" : "lax",
         maxAge: 3 * 24 * 60 * 60 * 1000,
     };
 }
@@ -14,8 +24,8 @@ export function getAccessTokenCookieOptions(): CookieOptions {
 export function getRefreshTokenCookieOptions(): CookieOptions {
     return {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+        secure: useSecureCrossSiteCookies,
+        sameSite: useSecureCrossSiteCookies ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 }
@@ -23,7 +33,7 @@ export function getRefreshTokenCookieOptions(): CookieOptions {
 export function getClearAuthCookieOptions(): CookieOptions {
     return {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
+        secure: useSecureCrossSiteCookies,
+        sameSite: useSecureCrossSiteCookies ? "none" : "lax",
     };
 }
