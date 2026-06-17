@@ -1,23 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit'
-import authReducer from '~/features/auth/authSlice'
+import authReducer, { type AuthState } from '~/features/auth/authSlice'
 import cartReducer, { type CartState } from '~/features/cart/cartSlice'
 import wishlistReducer, { type WishlistState } from '~/features/wishlist/wishlistSlice'
-import type { AuthState } from '~/features/auth/authSlice'
-import { readAuthFromStorage } from '~/lib/authStorage'
+import { readUserFromStorage } from '~/lib/authStorage'
 import { readCartFromStorage, saveCartToStorage } from '~/lib/cartStorage'
 import { readWishlistFromStorage, saveWishlistToStorage } from '~/lib/wishlistStorage'
 
-const preloaded = readAuthFromStorage()
+const preloadedUser = readUserFromStorage()
 
-const preloadedAuth: AuthState = preloaded
+const preloadedAuth: AuthState = preloadedUser
   ? {
-      user: preloaded.user,
-      token: preloaded.token,
+      user: preloadedUser,
       isAuthenticated: true
     }
   : {
       user: null,
-      token: null,
       isAuthenticated: false
     }
 

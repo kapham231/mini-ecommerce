@@ -9,6 +9,7 @@ import passport from "passport";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { validate } from "../../shared/middleware/validation.middleware";
+import { authMiddleware } from "../../shared/middleware";
 import { authRateLimiter } from "../../shared/middleware/rate-limit.middleware";
 import { registerSchema, loginSchema } from "./auth.types";
 
@@ -40,6 +41,10 @@ export function createAuthRouter(): Router {
         "/refresh",
         authController.refreshToken
     );
+
+    router.get("/me", authMiddleware, authController.me);
+
+    router.post("/logout", authController.logout);
 
     // ============================================
     // Social Auth (Google)

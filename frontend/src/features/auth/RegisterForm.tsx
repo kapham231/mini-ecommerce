@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
 import { register as registerRequest } from '~/lib/api/auth'
-import { saveAuthToStorage } from '~/lib/authStorage'
+import { saveUserToStorage } from '~/lib/authStorage'
 import { useAppDispatch } from '~/app/hooks'
 import { setCredentials } from '~/features/auth/authSlice'
 import { setCartItems } from '~/features/cart/cartSlice'
@@ -101,8 +101,8 @@ export function RegisterForm() {
       const userWishlistIds = readWishlistFromStorage(user.id)
       dispatch(setCartItems(userCartItems))
       dispatch(setWishlistIds(userWishlistIds))
-      dispatch(setCredentials({ token: data.token, user }))
-      saveAuthToStorage(data.token, user)
+      dispatch(setCredentials({ user }))
+      saveUserToStorage(user)
       navigate('/')
     } catch (err) {
       if (axios.isAxiosError(err)) {

@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ScrollToTop } from '~/components/layout/ScrollToTop'
+import { AuthBootstrap } from '~/features/auth/AuthBootstrap'
 import { AdminCategoryEditPage } from '~/admin/pages/AdminCategoryEditPage'
 import { AdminCategoryFormPage } from '~/admin/pages/AdminCategoryFormPage'
 import { AdminCategoriesPage } from '~/admin/pages/AdminCategoriesPage'
@@ -58,8 +59,10 @@ function AppRoutes() {
 export default function App() {
   return (
     <>
-      <ScrollToTop />
-      <AppRoutes />
+      <AuthBootstrap>
+        <ScrollToTop />
+        <AppRoutes />
+      </AuthBootstrap>
     </>
   )
 }

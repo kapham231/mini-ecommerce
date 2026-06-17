@@ -1,5 +1,5 @@
 import { axiosInstance } from '~/lib/axios'
-import type { AuthResponse } from '~/types/auth'
+import type { AuthResponse, User } from '~/types/auth'
 import type { ApiEnvelope } from './types'
 
 export type LoginPayload = {
@@ -13,23 +13,18 @@ export type RegisterPayload = {
   password: string
 }
 
-type AuthResponseBody = {
-  token?: string
-  accessToken?: string
-  user: {
-    id: number | string
-    email: string
-    name?: string
-    role?: 'USER' | 'ADMIN'
-  }
-}
-
-function toAuthUser(user: {
+type AuthUserBody = {
   id: number | string
   email: string
   name?: string
   role?: 'USER' | 'ADMIN'
-}): AuthResponse['user'] {
+}
+
+type AuthResponseBody = {
+  user: AuthUserBody
+}
+
+function toAuthUser(user: AuthUserBody): User {
   return {
     id: String(user.id),
     email: user.email,
@@ -51,12 +46,7 @@ function unwrapAuthBody(payload: AuthResponseBody | ApiEnvelope<AuthResponseBody
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
   const response = await axiosInstance.post<AuthResponseBody | ApiEnvelope<AuthResponseBody>>('/auth/login', payload)
   const body = unwrapAuthBody(response.data)
-  const token = body.token ?? body.accessToken
-  if (!token) {
-    throw new Error('Thiếu token trong phản hồi đăng nhập')
-  }
   return {
-    token,
     user: toAuthUser(body.user)
   }
 }
@@ -67,12 +57,34 @@ export async function login(payload: LoginPayload): Promise<AuthResponse> {
 export async function register(payload: RegisterPayload): Promise<AuthResponse> {
   const response = await axiosInstance.post<AuthResponseBody | ApiEnvelope<AuthResponseBody>>('/auth/register', payload)
   const body = unwrapAuthBody(response.data)
-  const token = body.token ?? body.accessToken
-  if (!token) {
-    throw new Error('Thiếu token trong phản hồi đăng ký')
-  }
   return {
-    token,
     user: toAuthUser(body.user)
+  }
+}
+
+/**
+ * GET /api/auth/me
+ */
+export async function getMe(): Promise<AuthResponse> {
+  const response = await axiosInstance.get<ApiEnvelope<AuthResponseBody>>('/auth/me')
+  return {
+    user: toAuthUser(response.data.data.user)
+  }
+}
+
+/**
+ * POST /api/auth/logout
+ */
+export async function logoutRequest(): Promise<void> {
+  await axiosInstance.post('/auth/logout')
+}
+
+/**
+ * POST /api/auth/refresh
+ */
+export async function refreshSession(): Promise<AuthResponse> {
+  const response = await axiosInstance.post<ApiEnvelope<AuthResponseBody>>('/auth/refresh')
+  return {
+    user: toAuthUser(response.data.data.user)
   }
 }

@@ -204,6 +204,19 @@ export class AuthService {
     }
 
     /**
+     * Revoke refresh session and clear auth state
+     */
+    async logout(refreshToken?: string): Promise<void> {
+        if (!refreshToken) {
+            return;
+        }
+
+        await prisma.session.deleteMany({
+            where: { refreshToken },
+        });
+    }
+
+    /**
      * Get user by ID (useful for other modules)
      */
     async getUserById(id: string) {

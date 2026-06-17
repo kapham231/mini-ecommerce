@@ -5,6 +5,7 @@ import { shopProducts } from '~/data/shopCatalog'
 import { logout } from '~/features/auth/authSlice'
 import { clearCart } from '~/features/cart/cartSlice'
 import { clearWishlist } from '~/features/wishlist/wishlistSlice'
+import { logoutRequest } from '~/lib/api/auth'
 import { clearAuthStorage } from '~/lib/authStorage'
 import { formatVndFromDecimal } from '~/lib/formatPrice'
 
@@ -88,7 +89,12 @@ export function SiteHeader() {
     return shopProducts.filter((p) => p.name.toLowerCase().includes(keyword) || p.slug.toLowerCase().includes(keyword)).slice(0, 6)
   }, [searchTerm])
 
-  function handleLogout() {
+  async function handleLogout() {
+    try {
+      await logoutRequest()
+    } catch {
+      // Clear local state even if the API call fails.
+    }
     clearAuthStorage()
     dispatch(logout())
     dispatch(clearCart())
