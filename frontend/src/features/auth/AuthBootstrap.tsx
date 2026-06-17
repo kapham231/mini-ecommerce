@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import axios from 'axios'
 import { useAppDispatch } from '~/app/hooks'
-import { setCredentials, logout } from '~/features/auth/authSlice'
+import { setBootstrapped, setCredentials, logout } from '~/features/auth/authSlice'
 import { setCartItems } from '~/features/cart/cartSlice'
 import { setWishlistIds } from '~/features/wishlist/wishlistSlice'
 import { getMe } from '~/lib/api/auth'
@@ -38,6 +38,10 @@ export function AuthBootstrap({ children }: AuthBootstrapProps) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
           clearAuthStorage()
           dispatch(logout())
+        }
+      } finally {
+        if (!cancelled) {
+          dispatch(setBootstrapped(true))
         }
       }
     }

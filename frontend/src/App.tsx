@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ScrollToTop } from '~/components/layout/ScrollToTop'
+import { AdminRoute } from '~/features/auth/AdminRoute'
 import { AuthBootstrap } from '~/features/auth/AuthBootstrap'
 import { AdminCategoryEditPage } from '~/admin/pages/AdminCategoryEditPage'
 import { AdminCategoryFormPage } from '~/admin/pages/AdminCategoryFormPage'
@@ -32,13 +33,15 @@ function AppRoutes() {
       <Route path='/categories' element={<CategoriesPage />} />
       <Route path='/products' element={<ProductsPage />} />
       <Route path='/products/:slug' element={<ProductDetailPage />} />
-      <Route path='/admin' element={<AdminDashboardPage />} />
-      <Route path='/admin/products' element={<AdminProductsPage />} />
-      <Route path='/admin/categories' element={<AdminCategoriesPage />} />
-      <Route path='/admin/products/new' element={<AdminProductFormPage />} />
-      <Route path='/admin/categories/new' element={<AdminCategoryFormPage />} />
-      <Route path='/admin/categories/:id/edit' element={<AdminCategoryEditPage />} />
-      <Route path='/admin/products/:id/edit' element={<AdminProductEditPage />} />
+      <Route path='/admin' element={<AdminRoute />}>
+        <Route index element={<AdminDashboardPage />} />
+        <Route path='products' element={<AdminProductsPage />} />
+        <Route path='categories' element={<AdminCategoriesPage />} />
+        <Route path='products/new' element={<AdminProductFormPage />} />
+        <Route path='categories/new' element={<AdminCategoryFormPage />} />
+        <Route path='categories/:id/edit' element={<AdminCategoryEditPage />} />
+        <Route path='products/:id/edit' element={<AdminProductEditPage />} />
+      </Route>
       <Route path='/blog/articles' element={<BlogArticlesPage />} />
       <Route path='/contact' element={<ContactPage />} />
       <Route path='/login' element={isAuthenticated ? <Navigate to='/' replace /> : <LoginPage />} />

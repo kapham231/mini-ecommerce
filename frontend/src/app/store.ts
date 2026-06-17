@@ -11,11 +11,13 @@ const preloadedUser = readUserFromStorage()
 const preloadedAuth: AuthState = preloadedUser
   ? {
       user: preloadedUser,
-      isAuthenticated: true
+      isAuthenticated: true,
+      isBootstrapped: false
     }
   : {
       user: null,
-      isAuthenticated: false
+      isAuthenticated: false,
+      isBootstrapped: false
     }
 
 const preloadedCart: CartState = {

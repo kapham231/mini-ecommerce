@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { login as loginRequest } from '~/lib/api/auth'
 import { saveUserToStorage } from '~/lib/authStorage'
@@ -18,8 +18,19 @@ function normalizeUser(user: AuthResponse['user']) {
   }
 }
 
+function getPostLoginPath(fromPath: string | undefined, role: AuthResponse['user']['role']) {
+  if (!fromPath) return '/'
+
+  if (fromPath.startsWith('/admin')) {
+    return role === 'ADMIN' ? fromPath : '/'
+  }
+
+  return fromPath
+}
+
 export function LoginForm() {
   const navigate = useNavigate()
+  const location = useLocation()
   const dispatch = useAppDispatch()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -39,7 +50,9 @@ export function LoginForm() {
       dispatch(setWishlistIds(userWishlistIds))
       dispatch(setCredentials({ user }))
       saveUserToStorage(user)
-      navigate('/')
+
+      const fromPath = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname
+      navigate(getPostLoginPath(fromPath, user.role))
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const msg = (err.response?.data as { message?: string })?.message ?? err.message ?? 'Đăng nhập thất bại'

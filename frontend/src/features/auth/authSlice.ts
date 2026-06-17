@@ -5,11 +5,13 @@ import type { User } from '~/types/auth'
 export type AuthState = {
   user: User | null
   isAuthenticated: boolean
+  isBootstrapped: boolean
 }
 
 const initialState: AuthState = {
   user: null,
-  isAuthenticated: false
+  isAuthenticated: false,
+  isBootstrapped: false
 }
 
 const authSlice = createSlice({
@@ -23,9 +25,12 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null
       state.isAuthenticated = false
+    },
+    setBootstrapped: (state, action: PayloadAction<boolean>) => {
+      state.isBootstrapped = action.payload
     }
   }
 })
 
-export const { setCredentials, logout } = authSlice.actions
+export const { setCredentials, logout, setBootstrapped } = authSlice.actions
 export default authSlice.reducer
