@@ -24,6 +24,22 @@ enum OrderStatus {
   CANCELLED
 }
 
+// 3. Loại thông báo
+enum NotificationType {
+  // --- Admin notifications (nhận từ vendor) ---
+  VENDOR_REQUEST        // Vendor gửi yêu cầu chung
+  VENDOR_PRODUCT_REVIEW // Vendor yêu cầu duyệt sản phẩm
+  VENDOR_WITHDRAWAL     // Vendor yêu cầu rút tiền
+
+  // --- User notifications (từ vendor mà user theo dõi) ---
+  NEW_PRODUCT           // Sản phẩm mới từ vendor theo dõi
+  PRODUCT_PROMOTION     // Khuyến mãi sản phẩm
+
+  // --- Shared (dùng chung cho mọi role) ---
+  ORDER_STATUS          // Cập nhật trạng thái đơn hàng
+  SYSTEM                // Thông báo từ hệ thống
+}
+
 // 3. Model User chính
 model User {
   id       String  @id @default(uuid())
@@ -43,11 +59,12 @@ model User {
   updatedAt   DateTime  @updatedAt
 
   // Relations
-  accounts  Account[] // Cho Social Login (Google, Facebook...)
-  sessions  Session[] // Quản lý Refresh Token / Thiết bị
-  addresses Address[] // Một user có nhiều địa chỉ
-  orders    Order[]
-  cart      Cart?
+  accounts      Account[]      // Cho Social Login (Google, Facebook...)
+  sessions      Session[]      // Quản lý Refresh Token / Thiết bị
+  addresses     Address[]      // Một user có nhiều địa chỉ
+  orders        Order[]
+  cart          Cart?
+  notifications Notification[] // Thông báo của user
 
   @@index([deletedAt])
   @@index([createdAt])
@@ -189,4 +206,37 @@ model OrderItem {
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
+}
+
+// --- Model Notification ---
+// Thông báo đa năng: phục vụ admin (nhận yêu cầu từ vendor),
+// user (nhận thông báo sản phẩm mới từ vendor theo dõi),
+// và các loại thông báo hệ thống khác.
+// Dùng referenceId + referenceType để liên kết với entity bất kỳ (polymorphic reference).
+model Notification {
+  id      String @id @default(uuid())
+  userId  String // Người nhận thông báo (admin hoặc user)
+
+  type    NotificationType       // Phân loại thông báo
+  title   String                 // Tiêu đề ngắn gọn (hiển thị trên badge/list)
+  message String   @db.Text      // Nội dung chi tiết
+
+  // Polymorphic reference: liên kết đến entity liên quan
+  // VD: referenceId = "product-uuid", referenceType = "product"
+  //     referenceId = "order-uuid",   referenceType = "order"
+  referenceId   String?          // ID của entity liên quan
+  referenceType String?          // Loại entity: "product", "order", "vendor_request"...
+
+  isRead    Boolean  @default(false)
+  readAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([userId, isRead])     // Query nhanh: lấy thông báo chưa đọc của user
+  @@index([userId, createdAt])  // Query nhanh: phân trang theo thời gian
+  @@index([type])               // Query nhanh: lọc theo loại thông báo
 }
