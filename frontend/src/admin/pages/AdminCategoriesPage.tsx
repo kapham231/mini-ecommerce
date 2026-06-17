@@ -1,23 +1,34 @@
-import axios from 'axios'
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { AdminPageActions, AdminRowActions } from '~/admin/components/AdminActionBits'
+import { AdminAlert, AdminListMeta, AdminListPanel } from '~/admin/components/AdminListBits'
+import { AdminDataTable } from '~/admin/components/AdminDataTable'
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from '~/admin/components/AdminFilterBar'
 import { AdminLayout } from '~/admin/components/AdminLayout'
+import { getErrorMessage } from '~/admin/utils/getErrorMessage'
 import { deleteCategory, getCategories } from '~/lib/api/categories'
 import type { CategoryApi } from '~/lib/api/types'
 
-function getErrorMessage(error: unknown, fallback: string) {
-  if (axios.isAxiosError(error)) {
-    return (error.response?.data as { message?: string } | undefined)?.message ?? error.message ?? fallback
-  }
-  return fallback
-}
+const categoryTableHeaderClassName =
+  'grid grid-cols-[minmax(0,1fr)_180px_110px_180px] gap-4 bg-shop-blue/55 px-4 py-3 text-xs font-bold uppercase tracking-wide text-shop-ink/60'
+
+const categoryTableRowClassName = 'grid grid-cols-[minmax(0,1fr)_180px_110px_180px] gap-4 px-4 py-4 text-sm'
+
+const statusFilterOptions = [
+  { value: '', label: 'Tất cả' },
+  { value: 'active', label: 'Đang hiện' },
+  { value: 'inactive', label: 'Đang ẩn' },
+]
 
 export function AdminCategoriesPage() {
-  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [categories, setCategories] = useState<CategoryApi[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null)
+
+  const search = searchParams.get('search') ?? ''
+  const status = searchParams.get('status') ?? ''
 
   useEffect(() => {
     let cancelled = false
@@ -47,6 +58,41 @@ export function AdminCategoriesPage() {
     }
   }, [])
 
+  const filteredCategories = useMemo(() => {
+    const keyword = search.trim().toLowerCase()
+
+    return categories.filter((category) => {
+      const matchesSearch =
+        !keyword ||
+        category.name.toLowerCase().includes(keyword) ||
+        category.slug.toLowerCase().includes(keyword) ||
+        (category.description?.toLowerCase().includes(keyword) ?? false)
+
+      const matchesStatus =
+        !status ||
+        (status === 'active' && category.isActive !== false) ||
+        (status === 'inactive' && category.isActive === false)
+
+      return matchesSearch && matchesStatus
+    })
+  }, [categories, search, status])
+
+  function updateFilters(next: { search?: string; status?: string }) {
+    const params = new URLSearchParams(searchParams)
+
+    if (next.search !== undefined) {
+      if (next.search) params.set('search', next.search)
+      else params.delete('search')
+    }
+
+    if (next.status !== undefined) {
+      if (next.status) params.set('status', next.status)
+      else params.delete('status')
+    }
+
+    setSearchParams(params)
+  }
+
   async function handleDeleteCategory(category: CategoryApi) {
     setDeletingCategoryId(category.id)
     try {
@@ -62,50 +108,54 @@ export function AdminCategoriesPage() {
   return (
     <AdminLayout
       title='Quản lý danh mục'
-      description='Theo dõi danh sách danh mục sản phẩm hiện có từ backend.'
-      actions={
-        <>
-          <button
-            type='button'
-            onClick={() => navigate(-1)}
-            className='inline-flex min-h-11 items-center justify-center rounded-2xl border border-shop-ink/10 bg-white px-5 text-sm font-bold text-shop-ink transition hover:border-shop-teal/40 hover:text-shop-teal'
-          >
-            Quay lại
-          </button>
-          <Link
-            to='/admin/categories/new'
-            className='inline-flex min-h-11 items-center justify-center rounded-2xl bg-kid-green px-5 text-sm font-bold text-white shadow-md transition hover:brightness-95'
-          >
-            Thêm danh mục
-          </Link>
-        </>
-      }
+      description='Theo dõi danh sách danh mục sản phẩm hiện có từ backend, lọc nhanh theo từ khóa hoặc trạng thái.'
+      actions={<AdminPageActions createTo='/admin/categories/new' createLabel='Thêm danh mục' />}
     >
-      {error && (
-        <p className='rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800' role='alert'>
-          {error}
-        </p>
-      )}
+      <AdminFilterBar
+        gridClassName='md:grid-cols-[minmax(0,1fr)_200px_auto]'
+        onClear={() => setSearchParams(new URLSearchParams())}
+      >
+        <AdminFilterInput
+          label='Tìm theo tên / slug / mô tả'
+          value={search}
+          placeholder='Ví dụ: đồ chơi, do-choi...'
+          onChange={(value) => updateFilters({ search: value })}
+        />
+        <AdminFilterSelect
+          label='Trạng thái'
+          value={status}
+          options={statusFilterOptions}
+          onChange={(value) => updateFilters({ status: value })}
+        />
+      </AdminFilterBar>
+
+      <AdminListMeta
+        isLoading={isLoading}
+        summary={`Hiển thị ${filteredCategories.length} / ${categories.length} danh mục`}
+      />
+
+      {error && <AdminAlert message={error} />}
 
       {isLoading ? (
-        <div className='rounded-[1.5rem] border border-shop-ink/10 bg-shop-blue/35 px-5 py-12 text-center text-sm text-shop-ink/60'>
-          Đang tải danh sách danh mục...
-        </div>
+        <AdminListPanel message='Đang tải danh sách danh mục...' />
       ) : categories.length === 0 ? (
-        <div className='rounded-[1.5rem] border border-shop-ink/10 bg-shop-blue/35 px-5 py-12 text-center text-sm text-shop-ink/60'>
-          Chưa có danh mục nào.
-        </div>
+        <AdminListPanel message='Chưa có danh mục nào.' />
+      ) : filteredCategories.length === 0 ? (
+        <AdminListPanel message='Không tìm thấy danh mục phù hợp với bộ lọc hiện tại.' />
       ) : (
-        <div className='overflow-hidden rounded-[1.75rem] border border-shop-ink/10 bg-white shadow-shop-soft'>
-          <div className='grid grid-cols-[minmax(0,1fr)_180px_110px_180px] gap-4 bg-shop-blue/55 px-4 py-3 text-xs font-bold uppercase tracking-wide text-shop-ink/60'>
-            <span>Danh mục</span>
-            <span>Slug</span>
-            <span>Trạng thái</span>
-            <span>Thao tác</span>
-          </div>
+        <AdminDataTable
+          header={
+            <div className={categoryTableHeaderClassName}>
+              <span>Danh mục</span>
+              <span>Slug</span>
+              <span>Trạng thái</span>
+              <span>Thao tác</span>
+            </div>
+          }
+        >
           <div className='divide-y divide-shop-ink/8'>
-            {categories.map((category) => (
-              <div key={category.id} className='grid grid-cols-[minmax(0,1fr)_180px_110px_180px] gap-4 px-4 py-4 text-sm'>
+            {filteredCategories.map((category) => (
+              <div key={category.id} className={categoryTableRowClassName}>
                 <div className='min-w-0'>
                   <p className='truncate font-bold text-shop-ink'>{category.name}</p>
                   {category.description && (
@@ -122,28 +172,17 @@ export function AdminCategoriesPage() {
                     {category.isActive === false ? 'Ẩn' : 'Hiện'}
                   </span>
                 </div>
-                <div className='flex items-center gap-2'>
-                  <Link
-                    to={`/admin/categories/${category.id}/edit`}
-                    className='inline-flex min-h-9 items-center justify-center rounded-xl border border-shop-ink/10 bg-white px-3 text-xs font-bold text-shop-ink transition hover:border-shop-teal/40 hover:text-shop-teal'
-                  >
-                    Sửa
-                  </Link>
-                  <button
-                    type='button'
-                    disabled={deletingCategoryId === category.id}
-                    onClick={() => {
-                      void handleDeleteCategory(category)
-                    }}
-                    className='inline-flex min-h-9 items-center justify-center rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60'
-                  >
-                    {deletingCategoryId === category.id ? 'Đang xóa...' : 'Xóa'}
-                  </button>
-                </div>
+                <AdminRowActions
+                  editTo={`/admin/categories/${category.id}/edit`}
+                  isDeleting={deletingCategoryId === category.id}
+                  onDelete={() => {
+                    void handleDeleteCategory(category)
+                  }}
+                />
               </div>
             ))}
           </div>
-        </div>
+        </AdminDataTable>
       )}
     </AdminLayout>
   )

@@ -1,23 +1,25 @@
-import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
+import { AdminPagination, AdminPageActions, AdminRowActions } from '~/admin/components/AdminActionBits'
+import { AdminAlert, AdminListMeta, AdminListPanel } from '~/admin/components/AdminListBits'
+import { AdminDataTable } from '~/admin/components/AdminDataTable'
+import { AdminFilterBar, AdminFilterInput, AdminFilterSelect } from '~/admin/components/AdminFilterBar'
 import { AdminLayout } from '~/admin/components/AdminLayout'
+import { getErrorMessage } from '~/admin/utils/getErrorMessage'
 import { getCategories } from '~/lib/api/categories'
 import { deleteProduct, getProducts } from '~/lib/api/products'
 import type { CategoryApi, ProductApi } from '~/lib/api/types'
 import { formatVndFromDecimal } from '~/lib/formatPrice'
 
-function getErrorMessage(error: unknown, fallback: string) {
-  if (axios.isAxiosError(error)) {
-    return (error.response?.data as { message?: string } | undefined)?.message ?? error.message ?? fallback
-  }
-  return fallback
-}
-
 const pageSize = 12
 
+const productTableHeaderClassName =
+  'grid grid-cols-[minmax(0,1.3fr)_minmax(140px,0.7fr)_120px_140px_180px] gap-4 bg-shop-blue/55 px-4 py-3 text-xs font-bold uppercase tracking-wide text-shop-ink/60'
+
+const productTableRowClassName =
+  'grid grid-cols-[minmax(0,1.3fr)_minmax(140px,0.7fr)_120px_140px_180px] gap-4 px-4 py-4 text-sm'
+
 export function AdminProductsPage() {
-  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState<ProductApi[]>([])
   const [categories, setCategories] = useState<CategoryApi[]>([])
@@ -129,97 +131,61 @@ export function AdminProductsPage() {
     <AdminLayout
       title='Quản lý sản phẩm'
       description='Theo dõi danh sách sản phẩm đang bán từ backend, lọc nhanh theo từ khóa hoặc danh mục và đi tới luồng tạo mới.'
-      actions={
-        <>
-          <button
-            type='button'
-            onClick={() => navigate(-1)}
-            className='inline-flex min-h-11 items-center justify-center rounded-2xl border border-shop-ink/10 bg-white px-5 text-sm font-bold text-shop-ink transition hover:border-shop-teal/40 hover:text-shop-teal'
-          >
-            Quay lại
-          </button>
-          <Link
-            to='/admin/products/new'
-            className='inline-flex min-h-11 items-center justify-center rounded-2xl bg-kid-green px-5 text-sm font-bold text-white shadow-md transition hover:brightness-95'
-          >
-            Thêm sản phẩm
-          </Link>
-        </>
-      }
+      actions={<AdminPageActions createTo='/admin/products/new' createLabel='Thêm sản phẩm' />}
     >
-      <section className='grid gap-4 rounded-[1.5rem] border border-shop-ink/10 bg-shop-blue/35 p-4 md:grid-cols-[minmax(0,1fr)_260px_auto] md:items-end'>
-        <label className='flex flex-col gap-1 text-sm font-semibold text-shop-ink'>
-          Tìm theo tên / mô tả
-          <input
-            value={search}
-            onChange={(e) => updateFilters({ search: e.target.value, page: 1 })}
-            placeholder='Ví dụ: gấu bông, pastel, xếp hình...'
-            className='rounded-xl border border-shop-ink/15 bg-white px-3 py-2 text-shop-ink outline-none ring-shop-teal/40 focus:ring-2'
-          />
-        </label>
+      <AdminFilterBar
+        gridClassName='md:grid-cols-[minmax(0,1fr)_260px_auto]'
+        onClear={() => setSearchParams(new URLSearchParams())}
+      >
+        <AdminFilterInput
+          label='Tìm theo tên / mô tả'
+          value={search}
+          placeholder='Ví dụ: gấu bông, pastel, xếp hình...'
+          onChange={(value) => updateFilters({ search: value, page: 1 })}
+        />
+        <AdminFilterSelect
+          label='Danh mục'
+          value={categoryId}
+          onChange={(value) => updateFilters({ categoryId: value, page: 1 })}
+          options={[
+            { value: '', label: 'Tất cả danh mục' },
+            ...categories.map((category) => ({ value: category.id, label: category.name })),
+          ]}
+        />
+      </AdminFilterBar>
 
-        <label className='flex flex-col gap-1 text-sm font-semibold text-shop-ink'>
-          Danh mục
-          <select
-            value={categoryId}
-            onChange={(e) => updateFilters({ categoryId: e.target.value, page: 1 })}
-            className='rounded-xl border border-shop-ink/15 bg-white px-3 py-2 text-shop-ink outline-none ring-shop-teal/40 focus:ring-2'
-          >
-            <option value=''>Tất cả danh mục</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </label>
+      <AdminListMeta
+        isLoading={isLoading}
+        summary={`Hiển thị ${products.length} / ${totalItems} sản phẩm`}
+        trailing={
+          <p>
+            Trang {page} / {totalPages}
+          </p>
+        }
+      />
 
-        <button
-          type='button'
-          onClick={() => setSearchParams(new URLSearchParams())}
-          className='inline-flex min-h-11 items-center justify-center rounded-2xl border border-shop-ink/10 bg-white px-5 text-sm font-bold text-shop-ink transition hover:border-shop-teal/40 hover:text-shop-teal'
-        >
-          Xóa bộ lọc
-        </button>
-      </section>
-
-      <div className='mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-shop-ink/60'>
-        <p>
-          {isLoading ? 'Đang tải dữ liệu...' : `Hiển thị ${products.length} / ${totalItems} sản phẩm`}
-        </p>
-        <p>Trang {page} / {totalPages}</p>
-      </div>
-
-      {error && (
-        <p className='mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800' role='alert'>
-          {error}
-        </p>
-      )}
+      {error && <AdminAlert message={error} />}
 
       {isLoading ? (
-        <div className='mt-6 rounded-[1.5rem] border border-shop-ink/10 bg-shop-blue/35 px-5 py-12 text-center text-sm text-shop-ink/60'>
-          Đang tải danh sách sản phẩm...
-        </div>
+        <AdminListPanel message='Đang tải danh sách sản phẩm...' />
       ) : products.length === 0 ? (
-        <div className='mt-6 rounded-[1.5rem] border border-shop-ink/10 bg-shop-blue/35 px-5 py-12 text-center text-sm text-shop-ink/60'>
-          Không tìm thấy sản phẩm phù hợp với bộ lọc hiện tại.
-        </div>
+        <AdminListPanel message='Không tìm thấy sản phẩm phù hợp với bộ lọc hiện tại.' />
       ) : (
-        <div className='mt-6 overflow-hidden rounded-[1.75rem] border border-shop-ink/10 bg-white shadow-shop-soft'>
-          <div className='grid grid-cols-[minmax(0,1.3fr)_minmax(140px,0.7fr)_120px_140px_180px] gap-4 bg-shop-blue/55 px-4 py-3 text-xs font-bold uppercase tracking-wide text-shop-ink/60'>
-            <span>Sản phẩm</span>
-            <span>Danh mục</span>
-            <span>Tồn kho</span>
-            <span>Giá</span>
-            <span>Thao tác</span>
-          </div>
-
+        <AdminDataTable
+          minWidthClassName='min-w-[800px]'
+          header={
+            <div className={productTableHeaderClassName}>
+              <span>Sản phẩm</span>
+              <span>Danh mục</span>
+              <span>Tồn kho</span>
+              <span>Giá</span>
+              <span>Thao tác</span>
+            </div>
+          }
+        >
           <div className='divide-y divide-shop-ink/8'>
             {products.map((product) => (
-              <div
-                key={product.id}
-                className='grid grid-cols-[minmax(0,1.3fr)_minmax(140px,0.7fr)_120px_140px_180px] gap-4 px-4 py-4 text-sm'
-              >
+              <div key={product.id} className={productTableRowClassName}>
                 <div className='min-w-0'>
                   <p className='truncate font-bold text-shop-ink'>{product.name}</p>
                   <p className='mt-1 text-xs text-shop-ink/55'>
@@ -240,49 +206,20 @@ export function AdminProductsPage() {
                   </span>
                 </div>
                 <div className='font-semibold text-shop-ink'>{formatVndFromDecimal(String(product.price))}</div>
-                <div className='flex items-center gap-2'>
-                  <Link
-                    to={`/admin/products/${product.id}/edit`}
-                    className='inline-flex min-h-9 items-center justify-center rounded-xl border border-shop-ink/10 bg-white px-3 text-xs font-bold text-shop-ink transition hover:border-shop-teal/40 hover:text-shop-teal'
-                  >
-                    Sửa
-                  </Link>
-                  <button
-                    type='button'
-                    disabled={deletingProductId === product.id}
-                    onClick={() => {
-                      void handleDeleteProduct(product)
-                    }}
-                    className='inline-flex min-h-9 items-center justify-center rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-bold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60'
-                  >
-                    {deletingProductId === product.id ? 'Đang xóa...' : 'Xóa'}
-                  </button>
-                </div>
+                <AdminRowActions
+                  editTo={`/admin/products/${product.id}/edit`}
+                  isDeleting={deletingProductId === product.id}
+                  onDelete={() => {
+                    void handleDeleteProduct(product)
+                  }}
+                />
               </div>
             ))}
           </div>
-        </div>
+        </AdminDataTable>
       )}
 
-      <div className='mt-6 flex flex-wrap items-center justify-between gap-3'>
-        <button
-          type='button'
-          disabled={page <= 1}
-          onClick={() => updateFilters({ page: page - 1 })}
-          className='inline-flex min-h-11 items-center justify-center rounded-2xl border border-shop-ink/10 bg-white px-5 text-sm font-bold text-shop-ink transition hover:border-shop-teal/40 hover:text-shop-teal disabled:cursor-not-allowed disabled:opacity-50'
-        >
-          Trang trước
-        </button>
-
-        <button
-          type='button'
-          disabled={page >= totalPages}
-          onClick={() => updateFilters({ page: page + 1 })}
-          className='inline-flex min-h-11 items-center justify-center rounded-2xl border border-shop-ink/10 bg-white px-5 text-sm font-bold text-shop-ink transition hover:border-shop-teal/40 hover:text-shop-teal disabled:cursor-not-allowed disabled:opacity-50'
-        >
-          Trang sau
-        </button>
-      </div>
+      <AdminPagination page={page} totalPages={totalPages} onPageChange={(nextPage) => updateFilters({ page: nextPage })} />
     </AdminLayout>
   )
 }
