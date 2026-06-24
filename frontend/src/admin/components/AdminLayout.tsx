@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { AdminNotificationBell } from '~/admin/components/AdminNotificationBell'
 
 type AdminLayoutProps = {
   eyebrow?: string
@@ -19,7 +20,13 @@ export function AdminLayout({
 }: AdminLayoutProps) {
   return (
     <div className='min-h-screen bg-shop-blue font-sans'>
-      <main className={`mx-auto ${maxWidthClassName} px-4 py-10 sm:px-6`}>
+      <header className={`mx-auto ${maxWidthClassName} px-4 pt-6 sm:px-6`}>
+        <div className='flex items-center justify-end'>
+          <AdminNotificationBell />
+        </div>
+      </header>
+
+      <main className={`mx-auto ${maxWidthClassName} px-4 pb-10 pt-4 sm:px-6`}>
         <section className='rounded-[2rem] bg-white px-6 py-7 shadow-shop-soft sm:px-8'>
           <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
             <div>

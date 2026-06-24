@@ -73,3 +73,32 @@ export type CreateProductBody = {
 }
 
 export type UpdateProductBody = Partial<CreateProductBody>
+
+export type NotificationType =
+  | 'VENDOR_REQUEST'
+  | 'VENDOR_PRODUCT_REVIEW'
+  | 'VENDOR_WITHDRAWAL'
+  | 'NEW_PRODUCT'
+  | 'PRODUCT_PROMOTION'
+  | 'ORDER_STATUS'
+  | 'SYSTEM'
+
+export type NotificationApi = {
+  id: string
+  userId: string
+  type: NotificationType
+  title: string
+  message: string
+  referenceId?: string
+  referenceType?: string
+  isRead: boolean
+  readAt?: string
+  createdAt: string
+}
+
+export type NotificationQueryParams = {
+  page?: number
+  limit?: number
+  type?: NotificationType
+  isRead?: boolean
+}

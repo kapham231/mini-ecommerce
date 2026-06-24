@@ -6,6 +6,7 @@ import { AdminCategoryEditPage } from '~/admin/pages/AdminCategoryEditPage'
 import { AdminCategoryFormPage } from '~/admin/pages/AdminCategoryFormPage'
 import { AdminCategoriesPage } from '~/admin/pages/AdminCategoriesPage'
 import { AdminDashboardPage } from '~/admin/pages/AdminDashboardPage'
+import { AdminNotificationsPage } from '~/admin/pages/AdminNotificationsPage'
 import { AdminProductEditPage } from '~/admin/pages/AdminProductEditPage'
 import { AdminProductFormPage } from '~/admin/pages/AdminProductFormPage'
 import { AdminProductsPage } from '~/admin/pages/AdminProductsPage'
@@ -37,6 +38,7 @@ function AppRoutes() {
         <Route index element={<AdminDashboardPage />} />
         <Route path='products' element={<AdminProductsPage />} />
         <Route path='categories' element={<AdminCategoriesPage />} />
+        <Route path='notifications' element={<AdminNotificationsPage />} />
         <Route path='products/new' element={<AdminProductFormPage />} />
         <Route path='categories/new' element={<AdminCategoryFormPage />} />
         <Route path='categories/:id/edit' element={<AdminCategoryEditPage />} />
