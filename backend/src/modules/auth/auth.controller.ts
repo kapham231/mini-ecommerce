@@ -130,6 +130,13 @@ export class AuthController {
         const tokenFromBody = req.body?.refreshToken as string | undefined;
         const refreshToken = tokenFromCookie || tokenFromBody;
 
+        if (!refreshToken) {
+            return res.status(400).json({
+                success: false,
+                message: "Refresh token is required",
+            });
+        }
+
         const result = await this.authService.refreshToken(refreshToken);
 
         res.cookie("token", result.token, {
