@@ -69,7 +69,7 @@ export class EventRegistry {
     public attachHandlers(socket: Socket, io: SocketIOServer): void {
         this.handlers.forEach((handler, key) => {
             const [namespace, event] = key.split(":");
-            
+
             socket.on(event, async (...args) => {
                 try {
                     await handler(socket, io, ...args);

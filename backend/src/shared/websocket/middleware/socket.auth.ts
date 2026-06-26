@@ -29,8 +29,8 @@ export class SocketAuthMiddleware {
     public authenticate(socket: Socket, next: (err?: Error) => void): void {
         try {
             // Get token from query or headers
-            const token = socket.handshake.query.token as string || 
-                         socket.handshake.headers.authorization?.replace("Bearer ", "");
+            const token = socket.handshake.query.token as string ||
+                socket.handshake.headers.authorization?.replace("Bearer ", "");
 
             if (!token) {
                 return next(new Error("Authentication token is required"));
